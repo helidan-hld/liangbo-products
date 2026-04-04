@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>两博产品知识库</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#FAF8F5;--t:#2C2420;--tl:#8C7B6E;--a:#C4956A;--a2:#E8D5C4;--ad:#A0704A;--b:#EDE8E2;--sh:rgba(160,130,110,.08);--g:#C9A96E;--green:#4A7A4A;--blue:#3A5A8A;--gold:#A07020}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--t);min-height:100vh}
+.hdr{background:linear-gradient(135deg,#2C2420 0%,#4A3A30 50%,#5C4A3A 100%);color:#fff;padding:52px 60px 44px;position:relative;overflow:hidden}
+.hdr::before{content:"";position:absolute;top:-60%;right:-5%;width:700px;height:700px;background:radial-gradient(circle,rgba(196,149,106,.18) 0%,transparent 70%);border-radius:50%}
+.hc{position:relative;z-index:1;max-width:1200px;margin:0 auto}
+.hb{display:inline-block;background:rgba(201,169,110,.18);border:1px solid rgba(201,169,110,.35);color:#C9A96E;font-size:11px;letter-spacing:2px;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:14px}
+h1{font-size:36px;font-weight:700;margin-bottom:8px}
+.sub{font-size:15px;opacity:.65;font-weight:300;max-width:480px}
+.st{display:flex;gap:36px;margin-top:28px;padding-top:22px;border-top:1px solid rgba(255,255,255,.1)}
+.si .sn{font-size:26px;font-weight:700;color:#C9A96E}
+.si .sl{font-size:12px;opacity:.5;margin-top:2px}
+.sw{max-width:1200px;margin:-22px auto 0;padding:0 60px;position:relative;z-index:10}
+.sb{background:#fff;border-radius:14px;box-shadow:0 4px 28px var(--sh);display:flex;align-items:center;padding:12px 18px;gap:10px}
+.sb input{flex:1;border:none;outline:none;font-size:15px;color:var(--t);background:transparent;font-family:inherit}
+.sb input::placeholder{color:#C0B5AD}
+.sc{font-size:12px;color:var(--tl);background:var(--bg);padding:4px 10px;border-radius:8px}
+.tw{max-width:1200px;margin:28px auto 0;padding:0 60px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tab{padding:7px 16px;border-radius:10px;font-size:13.5px;cursor:pointer;border:1.5px solid var(--b);background:#fff;color:var(--tl);transition:all .2s;font-family:inherit;font-weight:500}
+.tab:hover{border-color:var(--a);color:var(--ad)}
+.tab.on{background:var(--t);color:#fff;border-color:var(--t)}
+.tab .cnt{display:inline-block;background:rgba(0,0,0,.06);padding:1px 5px;border-radius:5px;font-size:11px;margin-left:5px}
+.tab.on .cnt{background:rgba(255,255,255,.18)}
+.mw{max-width:1200px;margin:24px auto 70px;padding:0 60px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin-bottom:36px}
+.card{background:#fff;border-radius:14px;border:1px solid var(--b);padding:18px;transition:all .28s;animation:ic .4s ease both}
+.card:hover{transform:translateY(-3px);box-shadow:0 10px 36px var(--sh);border-color:var(--a2)}
+.ctop{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.cn{font-size:14.5px;font-weight:600;line-height:1.4;flex:1;padding-right:10px}
+.cp{font-size:13.5px;font-weight:700;color:var(--ad);white-space:nowrap}
+.csz{font-size:11.5px;color:var(--tl);margin-top:2px}
+.ctags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:9px}
+.tag{font-size:11px;padding:2px 9px;border-radius:20px;background:var(--a2);color:var(--ad);font-weight:500}
+.tag.s{background:#E4EFE4;color:var(--green)}
+.tag.t{background:#E4EBF4;color:var(--blue)}
+.tag.x{background:#FFF3DC;color:var(--gold)}
+.chr{height:1px;background:var(--b);margin:9px 0}
+.cdesc{font-size:12.5px;color:var(--tl);line-height:1.75}
+.cskin{font-size:11.5px;color:var(--ad);margin-top:7px;font-weight:500}
+.cing{display:flex;gap:4px;flex-wrap:wrap;margin-top:8px}
+.ing{font-size:11px;padding:2px 7px;border-radius:5px;background:var(--bg);color:var(--tl);border:1px solid var(--b)}
+.seg-hdr{display:flex;align-items:center;gap:10px;margin-bottom:16px;padding-bottom:12px;border-bottom:1.5px solid var(--b)}
+.seg-title{font-size:14px;font-weight:700;color:var(--t)}
+.seg-sub{font-size:12px;color:var(--tl);margin-left:auto}
+.rec-box{background:#fff;border-radius:14px;border:1px solid var(--b);overflow:hidden;margin-bottom:20px;animation:ic .4s ease}
+.rec-hdr{background:linear-gradient(90deg,#2C2420,#4A3A30);color:#fff;padding:12px 16px;display:flex;align-items:center;gap:8px}
+.rec-hdr-title{font-size:13px;font-weight:600}
+.rec-body{padding:12px 16px;display:flex;flex-direction:column;gap:8px}
+.rec-row{display:flex;gap:10px;font-size:13px}
+.rec-scene{background:rgba(196,149,106,.12);color:var(--ad);padding:3px 10px;border-radius:8px;font-weight:600;min-width:90px;text-align:center;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.rec-val{color:var(--t);line-height:1.5;flex:1}
+.combo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-bottom:32px}
+.combo-card{background:#fff;border-radius:14px;border:1px solid var(--b);overflow:hidden;animation:ic .4s ease}
+.combo-top{padding:14px 16px;background:linear-gradient(135deg,#2C2420,#4A3A30);color:#fff}
+.combo-name{font-size:14px;font-weight:600}
+.combo-budget{font-size:11.5px;opacity:.7;margin-top:2px}
+.combo-body{padding:12px 16px}
+.combo-step{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;color:var(--tl);padding:4px 0;line-height:1.5}
+.combo-step::before{content:"→";color:var(--a);font-weight:700;flex-shrink:0;margin-top:1px}
+.qa-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px;margin-bottom:32px}
+.qa-card{background:#fff;border-radius:12px;border:1px solid var(--b);padding:14px 16px;animation:ic .4s ease}
+.qq{font-size:13px;font-weight:600;color:var(--t);margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--b)}
+.qq::before{content:"Q ";color:var(--a);font-weight:700}
+.qa{font-size:12.5px;color:var(--tl);line-height:1.75}
+.ing-table{width:100%;border-collapse:collapse;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 2px 12px var(--sh)}
+.ing-table th{background:var(--t);color:#fff;padding:11px 16px;text-align:left;font-size:12px}
+.ing-table td{padding:10px 16px;font-size:12.5px;border-bottom:1px solid var(--b);vertical-align:top;line-height:1.6}
+.ing-table tr:last-child td{border-bottom:none}
+.ing-table tr:hover td{background:#FAF8F5}
+.ing-name{font-weight:600;color:var(--t)}
+.ing-effect{color:var(--blue)}
+.ing-prod{color:var(--ad)}
+.ing-star{color:var(--gold);font-weight:700}
+.footer{text-align:center;padding:28px;font-size:12px;color:var(--tl);border-top:1px solid var(--b)}
+.empty{text-align:center;padding:60px 20px;color:var(--tl);font-size:14px}
+@keyframes ic{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:768px){.hdr{padding:32px 20px 28px}h1{font-size:26px}.st{gap:20px;flex-wrap:wrap}.sw,.tw,.mw{padding:0 16px}.sw{margin-top:-18px}.cards,.qa-grid,.combo-grid{display:block}.rec-row{flex-direction:column}}}
+</style>
+</head>
+<body>
+<div class="hdr"><div class="hc">
+  <div class="hb">私域运营必备工具</div>
+  <h1>两博产品知识库</h1>
+  <p class="sub">两个博士后 &middot; 更年期肌肤抗衰老专家</p>
+  <div class="st">
+    <div><div class="sn">50+</div><div class="sl">SKU产品</div></div>
+    <div><div class="sn">8</div><div class="sl">产品品类</div></div>
+    <div><div class="sn">断崖式衰老</div><div class="sl">核心问题</div></div>
+    <div><div class="sn">油霜&middot;软膜</div><div class="sl">私域爆款</div></div>
+  </div>
+</div></div>
+<div class="sw">
+  <div class="sb">
+    <span style="font-size:17px;color:#C0B5AD">&nbsp;&nbsp;&#x1F50D;&nbsp;</span>
+    <input type="text" id="si" placeholder="搜索产品名称、成分或功效...">
+    <span class="sc" id="scnt">42 个产品</span>
+  </div>
+</div>
+<div class="tw">
+  <div class="tabs" id="tabs">
+    <button class="tab on" data-cat="all">全部 <span class="cnt">42</span></button>
+    <button class="tab" data-cat="&#x7CBE;&#x534E;&#x6C34;">精华水/喷雾 <span class="cnt">6</span></button>
+    <button class="tab" data-cat="&#x7CBE;&#x534E;">精华系列 <span class="cnt">10</span></button>
+    <button class="tab" data-cat="&#x9762;&#x971C;">霜类 <span class="cnt">5</span></button>
+    <button class="tab" data-cat="&#x4E73;&#x6DB2;">乳液类 <span class="cnt">3</span></button>
+    <button class="tab" data-cat="&#x773C;&#x90E8;">眼部系列 <span class="cnt">6</span></button>
+    <button class="tab" data-cat="&#x9762;&#x819C;">面膜/软膜 <span class="cnt">11</span></button>
+    <button class="tab" data-cat="&#x6D01;&#x9762;">洁面卸妆 <span class="cnt">3</span></button>
+    <button class="tab" data-cat="&#x79C1;&#x57DF;">&#x1F4A1; 私域推荐</button>
+    <button class="tab" data-cat="&#x6210;&#x5206;">&#x2697; 成分速查</button>
+    <button class="tab" data-cat="qa">应答话术 <span class="cnt">8</span></button>
+  </div>
+</div>
+<div class="mw" id="mainWrap"><div style="text-align:center;padding:60px;color:#8C7B6E;font-size:15px">加载中...</div></div>
+<div class="footer">两博产品知识库 &middot; 私域运营实战版</div>
+<script>
+var P=[{"c": "精华水", "n": "舒缓修护喷雾", "p": "¥229", "s": "60ml", "d": "三重薰衣草精粹抑制炎症因子改善泛红刺痛；可溶性胶原+贻贝提取物促进修护与胶原合成；马齿苋+龙胆根层层舒缓维稳", "tg": ["抗炎舒缓", "屏障修护"], "tt": "s", "i": ["薰衣草精粹", "可溶性胶原", "贻贝提取物", "马齿苋"], "sk": "敏感泛红肌"}, {"c": "精华水", "n": "人参细胞水", "p": "¥229", "s": "120ml", "d": "打开肌肤吸收通道，促进细胞活力。三重植物细胞补充肌底细胞活力；人参提取+葡萄果细胞唤醒肌肤年轻态", "tg": ["促渗焕活", "细胞抗衰"], "tt": "t", "i": ["人参细胞鲜萃", "葡萄果细胞提取物", "白细胞提取物"], "sk": "更年期衰老肌"}, {"c": "精华水", "n": "赋活舒缓精华水", "p": "¥179", "s": "120ml", "d": "专为解决更年期动不动就脸红发烫问题，上脸瞬间清凉。即刻镇定泛红灼热，为后续修护打开高速通道", "tg": ["泛红急救", "即时镇定"], "tt": "s", "i": ["海茴香", "芍药根专利", "库拉索芦荟叶水"], "sk": "更年期微炎症、干燥泛红"}, {"c": "精华水", "n": "赋活保湿精华水", "p": "¥199", "s": "120ml", "d": "唤醒肌底原生力，专利肌肽+烟酰胺+凝血酸，针对性调理更年期肌肤干燥粗糙问题", "tg": ["深度保湿", "屏障调理"], "tt": "s", "i": ["专利肌肽", "烟酰胺", "凝血酸", "龙胆根"], "sk": "干/暗/糙/脆/纹"}, {"c": "精华水", "n": "调肤水（玻色因）", "p": "¥219", "s": "120ml", "d": "紧致抗衰、促进角质老化细胞代谢。仿生细胞膜+类脂质体渗透技术，激活胶原细胞再生，改善吸收慢困扰", "tg": ["抗衰紧致", "促代谢"], "tt": "t", "i": ["玻色因", "可溶性胶原", "苹果干细胞", "人参干细胞"], "sk": "皮肤吸收代谢差"}, {"c": "精华水", "n": "发光水", "p": "¥199", "s": "95ml", "d": "熬夜发光水，提升肌肤透/亮/嫩/白。双重二裂酵母+胶原蛋白改善毛孔粗大黄气，让肌肤光泽紧致", "tg": ["熬夜急救", "祛黄透亮"], "tt": "s", "i": ["双重二裂酵母", "胶原蛋白", "PDRN"], "sk": "熬夜肌，暗黄松弛"}, {"c": "精华", "n": "焕活小紫瓶", "p": "¥249", "s": "30ml", "d": "抗衰修护，玻色因+海茴香激活胶原活力；腺苷+依克多因修护舒缓；专利小分子透明质酸深层锁水", "tg": ["进阶抗衰", "紧致淡纹"], "tt": "t", "i": ["玻色因", "海茴香", "依克多因", "腺苷"], "sk": "面部松垮垂纹"}, {"c": "精华", "n": "胶原闪充精华", "p": "¥498", "s": "5ml×6支", "d": "直补I/III/XVII型胶原蛋白+5个蛋白，密集补充肌底胶原营养，支撑胶原弹力网，层层抹平凹陷纹路", "tg": ["胶原直充", "密集修护"], "tt": "t", "i": ["I型胶原", "III型胶原", "XVII型胶原", "5个蛋白"], "sk": "面部松弛、弹性下降"}, {"c": "精华", "n": "水光小白瓶", "p": "¥269", "s": "30ml", "d": "保湿提亮祛黄，传明酸+烟酰胺+依克多因精准美白链路，抑制酪氨酸酶活性，改善肤色暗沉不均", "tg": ["美白祛黄", "保湿锁水"], "tt": "s", "i": ["水光HEPS", "传明酸", "依克多因", "烟酰胺"], "sk": "暗沉黄气"}, {"c": "精华", "n": "日防夜护精华套盒", "p": "¥319", "s": "套", "d": "日抗氧夜修护双管齐下。日：依克多因+麦角硫因+二裂酵母；夜：神经酰胺+十肽-4+玻色因", "tg": ["日夜分时", "全面抗衰"], "tt": "t", "i": ["依克多因", "麦角硫因", "神经酰胺", "十肽-4"], "sk": "熟龄衰老肌"}, {"c": "精华", "n": "次抛精华（玻尿酸）", "p": "¥269", "s": "1.5ml×30支", "d": "4重玻尿酸+甜菜碱多维锁水保湿，积雪草+母菊花等植物精粹舒缓肌肤，次抛设计确保活性", "tg": ["高效锁水", "次抛便携"], "tt": "s", "i": ["4重玻尿酸", "甜菜碱", "积雪草", "母菊花"], "sk": "各种肌肤"}, {"c": "精华", "n": "次抛精华（烟酰胺）", "p": "¥319", "s": "1.5ml×30支", "d": "焕亮肤色、抑黑提亮，烟酰胺+光果甘草+VC衍生物从多通路抑制黑色素，从源头抗氧改善暗沉不均", "tg": ["焕亮抑黑", "次抛便携"], "tt": "s", "i": ["烟酰胺", "光果甘草", "3-邻-乙基抗坏血酸"], "sk": "暗沉不均"}, {"c": "精华", "n": "水光弹（补充装）", "p": "¥89", "s": "补充装", "d": "双重臻嫩玻尿酸+血清蛋白+神经酰胺，深层补水锁水", "tg": ["深层补水", "性价比"], "tt": "s", "i": ["双重玻尿酸", "血清蛋白", "神经酰胺"], "sk": "干燥缺水"}, {"c": "精华", "n": "胶原弹（补充装）", "p": "¥89", "s": "补充装", "d": "专利双胶原×时光肽+PDRN，胶原直补紧致，补充装性价比高", "tg": ["胶原直充", "性价比"], "tt": "t", "i": ["专利双胶原", "时光肽", "PDRN"], "sk": "松弛紧致需求"}, {"c": "精华", "n": "肌能时光舒缓精华喷雾", "p": "¥99", "s": "100ml", "d": "随时随地补喷舒缓，依克多因+玻色因即时镇定肌肤，适合妆后或空调房补湿", "tg": ["随时舒缓", "补湿"], "tt": "s", "i": ["依克多因", "玻色因"], "sk": "各种肌肤"}, {"c": "面霜", "n": "金绷带全能面霜2.0 ⭐", "p": "¥498", "s": "50g", "d": "最高端线：5%纯干料玻色因+重组胶原+NMN，玻色因撑起肌肤结构对抗松弛；专利VC+2.5%烟酰胺抗氧祛黄提亮", "tg": ["顶级抗衰", "淡纹紧致"], "tt": "x", "i": ["5%玻色因", "重组胶原", "NMN", "专利VC", "2.5%烟酰胺"], "sk": "面部松垮垂纹暗沉"}, {"c": "面霜", "n": "琥珀油霜 ⭐核心大单品", "p": "¥498", "s": "32g", "d": "拒绝断崖式衰老：两提一撑。提雌激素（大豆异黄酮）+提修复力（六重更年油）+撑面部组织（专利马达肽+玻色因+HPR超A）", "tg": ["断崖抗衰", "核心大单品"], "tt": "x", "i": ["大豆异黄酮", "六重更年油", "双PDRN", "80%二裂酵母", "马达肽"], "sk": "更年期断崖式衰老"}, {"c": "面霜", "n": "紫绷带面霜（玻色因）", "p": "¥309", "s": "50g", "d": "玻色因+海茴香深层修复细胞损伤，激活胶原活力；多肽+视黄醇靶向淡纹紧致；麦角硫因+VE+角鲨烷强化抗氧提亮", "tg": ["抗氧提亮", "淡纹紧致"], "tt": "t", "i": ["玻色因", "海茴香", "6重胜肽", "麦角硫因"], "sk": "更年期胶原流失松弛暗沉"}, {"c": "面霜", "n": "赋活舒缓精华乳霜", "p": "¥269", "s": "50g", "d": "全皮层抗衰修复：表层5种神经酰胺填补屏障；中层4小分子活性肽焕活胶原；深层4重高活植物油滋养支撑", "tg": ["屏障修复", "全皮层抗衰"], "tt": "t", "i": ["5重神经酰胺", "三肽-1铜", "棕榈酰三肽-1", "山茶籽油"], "sk": "更年期干燥敏感松弛皱纹"}, {"c": "面霜", "n": "赋活保湿精华霜", "p": "¥269", "s": "50g", "d": "双粹高浓度银耳+β-葡聚糖+专利保湿成分协同；五重神经酰胺持续修复；积雪草+玻色因在保湿同时促进修护淡化干纹", "tg": ["深度保湿", "屏障强化"], "tt": "s", "i": ["银耳多糖", "五重神经酰胺", "积雪草甙", "β-葡聚糖"], "sk": "干/暗/糙/脆/纹"}, {"c": "乳液", "n": "玻色因臻颜乳", "p": "¥239", "s": "100ml", "d": "红石榴多酚6重舒缓抗氧复配；玻色因+海茴香促胶原生成增加弹性紧致度；山茶籽油+牛油果油+咖啡因深层保湿锁水", "tg": ["抗氧紧致", "促胶原"], "tt": "t", "i": ["红石榴多酚", "玻色因", "海茴香", "山茶籽油"], "sk": "更年期易暗沉弹性差"}, {"c": "乳液", "n": "赋活舒缓精华乳", "p": "¥239", "s": "100ml", "d": "韩国进口5重神经酰胺完整复制健康皮脂膜结构；专利植物舒缓组方切断干燥-瘙痒-抓挠恶性循环，连续7天干燥脱屑肉眼改善", "tg": ["屏障重建", "退红舒缓"], "tt": "s", "i": ["5重神经酰胺", "依克多因", "芍药根", "龙胆根"], "sk": "更年期易潮热肤质"}, {"c": "乳液", "n": "赋活保湿精华乳", "p": "¥219", "s": "100ml", "d": "精准补水+屏障修复，神经酰胺复合物精准补充细胞间脂质；白池花籽油稳定抗氧化；锁水磁石+专利银耳多糖形成长效锁水网", "tg": ["精准锁水", "外油内干"], "tt": "s", "i": ["五重神经酰胺", "白池花籽油", "银耳多糖", "β-葡聚糖"], "sk": "外油内干"}, {"c": "眼部", "n": "眼部紫熨斗", "p": "¥239", "s": "15g", "d": "全通路抗老眼霜：玻色因+十重胜肽促进胶原紧致；肝素钠改善眼周循环浮肿；麦角硫因抗氧提亮眼周", "tg": ["全通路抗老", "紧致淡纹"], "tt": "t", "i": ["玻色因", "十重胜肽", "肝素钠", "麦角硫因"], "sk": "眼纹黑眼圈松弛"}, {"c": "眼部", "n": "眼脸全能紧致乳", "p": "¥312", "s": "1.5ml×30支", "d": "全脸滋养，眼+脸淡纹预防。人体紧致加速器双肽快速激活胶原生成；专利胶原蛋白嘭弹眼周；不止眼周全脸可用", "tg": ["眼脸两用", "胶原嘭弹"], "tt": "t", "i": ["双肽", "专利胶原蛋白", "六胜肽"], "sk": "眼纹细纹面部松弛"}, {"c": "眼部", "n": "淡纹小金油", "p": "¥239", "s": "15g", "d": "79%天然高活性植物油脂以油养眼：灵芝孢子油+仙人掌籽油提高眼周免疫屏障；多维度改善眼周纹路、提拉紧致、改善浮肿暗沉", "tg": ["油养眼周", "多效合一"], "tt": "s", "i": ["灵芝孢子油", "仙人掌籽油", "霍霍巴籽油"], "sk": "眼纹干纹眼袋浮肿"}, {"c": "眼部", "n": "紧致小黑瓶眼霜", "p": "¥239", "s": "15g", "d": "XVII型胶原（可溶性胶原）+5D淡纹环肽精准打击眼周皱纹；黑灵芝×VC+VE抗氧修护；专利超膜盾PRO智感收紧", "tg": ["淡纹提亮", "收紧轮廓"], "tt": "t", "i": ["XVII型胶原", "5D淡纹环肽", "黑灵芝"], "sk": "眼部松弛暗沉"}, {"c": "眼部", "n": "淡纹紧致眼膜套1.0", "p": "¥229", "s": "套", "d": "双肽（蛇毒肽、六肽-8）+双胶原（专利+可溶性胶原）胶原直充，15分钟淡纹急救", "tg": ["胶原直充", "淡纹急救"], "tt": "t", "i": ["蛇毒肽", "六肽-8", "专利胶原蛋白"], "sk": "眼纹松弛黑眼圈"}, {"c": "眼部", "n": "胶原逆龄熨纹眼膜2.0", "p": "¥169", "s": "套", "d": "25%逆龄胶原+10%逆龄熨纹肽；依克多因+肌肽抗氧抑黑；15分钟急救眼纹、改善浮肿暗沉", "tg": ["15分钟急救", "胶原淡纹"], "tt": "t", "i": ["25%逆龄胶原", "10%熨纹肽", "依克多因", "肌肽"], "sk": "眼部松弛纹理浮肿"}, {"c": "面膜", "n": "黄金软膜2.1 ⭐高频转化", "p": "¥498", "s": "(25ml+25g)×6对", "d": "私域爆款：补油补水93:7黄金水油配比；藏红花精粹高效抗氧；玻色因减少氧化应激；人参+重组胶原蛋白祛皱肽层层紧致弹润。每周3-4次", "tg": ["水油同补", "私域爆款"], "tt": "x", "i": ["藏红花精粹", "玻色因", "人参提取物", "重组胶原蛋白"], "sk": "任何肌肤，熬夜急救"}, {"c": "面膜", "n": "胶原霜+软膜3.0", "p": "¥398", "s": "套", "d": "进阶补水补胶原塑轮廓，6D胶原+海茴香+玻色因进阶补充弹性纤维紧致肌肤；预防松垮激活胶原活力", "tg": ["进阶抗皱", "轮廓塑型"], "tt": "t", "i": ["6D胶原", "海茴香", "玻色因", "烟酰胺"], "sk": "松垮弹性差暗沉"}, {"c": "面膜", "n": "逆龄油养膜 ⭐高端", "p": "¥169", "s": "(3g+25ml)×5片", "d": "水油同敷，0乳化剂油养膜概念。角鲨烷+向日葵籽油肌肤水油平衡急救器；玻色因+超维A 15分钟密集补胶原；烟酰胺+原型VC+熊果苷拒绝暗沉不均", "tg": ["油敷概念", "减黄提亮"], "tt": "x", "i": ["角鲨烷", "玻色因", "烟酰胺", "原型VC"], "sk": "干皮暗沉弹性差"}, {"c": "面膜", "n": "黄金胶原面膜（发热）", "p": "¥179", "s": "28ml×5片", "d": "自热面膜，氢能热敷技术，使用时暖暖的像蒸汽SPA。重组胶原蛋白深层补水补胶原；改善肌肤粗糙松弛；北方冬天首选", "tg": ["自热SPA", "胶原紧致"], "tt": "t", "i": ["重组III型胶原", "二裂酵母溶胞产物"], "sk": "北方/干燥/吸收差"}, {"c": "面膜", "n": "焕新水光肌面膜（美白平价）", "p": "¥149", "s": "(25g+2g)×10片", "d": "深层补水+抑黑均匀肤色，透明质酸钠+银耳多糖深层补水；虎杖根+烟酰胺+光果甘草根清除自由基抑制氧化导致的肤色蜡黄", "tg": ["美白平价", "深层补水"], "tt": "s", "i": ["烟酰胺", "光果甘草", "银耳多糖", "虎杖根"], "sk": "暗沉色素堆积"}, {"c": "面膜", "n": "极光赋活精华面膜（美白高端）", "p": "¥249", "s": "(30g+2g)×5片", "d": "根源抑黑+深层滋养舒缓，长茎葡萄蕨藻提取物+积雪草调理细胞活力；茶叶+虎杖根强化抗氧抗糖；VC+烟酰胺+光果甘草综合改善气色", "tg": ["美白高端", "根源抑黑"], "tt": "s", "i": ["长茎葡萄蕨藻提取物", "积雪草", "VC", "烟酰胺"], "sk": "粗糙暗沉肤色不均"}, {"c": "面膜", "n": "双胶原冻干面膜 ⭐急救", "p": "¥229", "s": "(460mg+22ml)×5片", "d": "一片减褪干/纹/垮/糙，分仓冻干1秒激活技术；双重胶原蛋白+多种肽类高效渗透；高效保湿锁水，抚平细纹紧致弹性", "tg": ["冻干科技", "急救淡纹"], "tt": "x", "i": ["双重胶原", "多肽", "依克多因"], "sk": "暗沉无光泽"}, {"c": "面膜", "n": "紧致抗皱润颜面膜（片装）", "p": "¥179", "s": "25ml×5片", "d": "黄金抗皱，三维保持肌肤年轻，多肽+海藻+草本提取高效修护皮肤，让面部线条紧致效果立竿见影", "tg": ["紧致提拉", "片装"], "tt": "t", "i": ["多肽", "海藻提取", "草本精粹"], "sk": "松弛弹性差"}, {"c": "面膜", "n": "玻色因精粹弹润面膜（抗皱平价）", "p": "¥179", "s": "(25ml+1.5ml)×4片", "d": "4重活性胜肽+3重胶原直补皮肤流失的结构蛋白，增强皮肤弹性，淡化皱纹；肌肽+超氧化物歧化酶加强肌肤抗氧抗糖能力", "tg": ["抗皱平价", "胶原淡纹"], "tt": "s", "i": ["乙酰基六肽-8", "弹性蛋白", "可溶性胶原", "超氧化物歧化酶"], "sk": "衰老松弛"}, {"c": "面膜", "n": "胶原逆龄油霜面膜", "p": "¥198", "s": "20g×5片", "d": "一面贴膜+1瓶精华霜+面膜油霜，提/紧/嫩/滑，科技抗衰+植萃养护，多效需求一片解决", "tg": ["油霜面膜", "多效合一"], "tt": "x", "i": ["HPR", "玻色因", "六重更年油", "大豆异黄酮"], "sk": "更龄肌干燥松弛暗沉"}, {"c": "洁面", "n": "琥珀逆龄洁颜蜜", "p": "¥169", "s": "150ml", "d": "洗卸养三合一，珍稀沧源黑蜜精华养肤。无皂基无酒精无矿物油，温和清洁同时改善泛红瘙痒，敏肌首选", "tg": ["洗卸养三合一", "敏肌温和"], "tt": "s", "i": ["三重专利氨基酸", "泛醇", "透明质酸", "甘草酸二钾"], "sk": "更年期干燥敏感脆弱肌"}, {"c": "洁面", "n": "玫瑰洁颜净澈卸妆油", "p": "¥149", "s": "110ml", "d": "卸养一体瞬息溶妆，30秒净澈不伤肤。霍霍巴籽油+葡萄籽油+玫瑰花油植萃加持，洗后不紧绷不油腻", "tg": ["卸养一体", "30秒溶妆"], "tt": "s", "i": ["霍霍巴籽油", "葡萄籽油", "玫瑰花油"], "sk": "化妆/防晒人群"}, {"c": "洁面", "n": "玫瑰纯露焕亮洗面奶", "p": "¥179", "s": "100g", "d": "氨基酸+APG复配表活天花板，温和清洁不打折。洗卸合一淡妆防晒直接溶；依克多因+15氨基酸+玫瑰纯露养肤，洗完像拍完精华水", "tg": ["洗卸合一", "提亮"], "tt": "s", "i": ["氨基酸+APG", "依克多因", "15氨基酸", "玫瑰纯露"], "sk": "各种肌肤"}];
+var qas=[{"q": "产品安全吗？有没有激素？", "a": "不含酒精、铅汞激素，所有成分都有专利，功效有功效报告，经过国家药监检测合格，完全可以放心使用。"}, {"q": "多久能看到效果？", "a": "肌肤代谢周期是28天，皱纹不是一天形成的。玻色因这类成分需要4-6周才能看到明显效果，很多顾客反馈用到4周左右效果就很好了。"}, {"q": "敏感肌可以用吗？", "a": "产品经过多次皮肤刺激性测试在安全范围内，敏感肌建议先局部测试。神经酰胺系列专门针对敏感肌肤设计，相对更温和。"}, {"q": "会不会过敏？", "a": "任何护肤品都有个体差异，更年期肌肤本身就比较敏感，建议先用舒缓系列建立肌肤耐受，再逐步加入抗衰产品。"}, {"q": "太贵了怎么办？", "a": "好的产品是时间沉淀出来的，玻色因、胶原蛋白、PDRN这些都是高端抗衰成分，一分价钱一分货，脸上的投资最值得。"}, {"q": "用完没效果怎么办？", "a": "皮肤改善分三阶段：①调理期激活皮肤（3-7天）→②反跳期老废细胞排出（7-14天看似变差）→③修复期真正改善松垮垂纹。很多人倒在第二阶段就放弃了。"}, {"q": "油霜会不会太油？", "a": "2-3颗手心混合按压，润而不腻。核心是里面的油珠，按珠子数量计算用量，冬天3-4颗，夏天2-3颗即可。"}, {"q": "软膜有刺痛感正常吗？", "a": "正常！产品采用小分子渗透技术，皮肤底层缺水时会出现细胞应急反应，说明在深层做营养补充。前三天可用保湿霜打底后再敷。"}];
+var catNames={"精华水": "精华水/喷雾", "精华": "精华系列", "面霜": "霜类", "乳液": "乳液类", "眼部": "眼部系列", "面膜": "面膜/软膜", "洁面": "洁面卸妆"};
+var catMeta={"精华水": {"tips": [["干皮客户", "调肤水 + 赋活保湿精华水"], ["敏感泛红", "舒缓修护喷雾 + 赋活舒缓精华水"], ["熬夜党", "发光水（急救必备）"]]}, "精华": {"tips": [["抗初老 30-40岁", "水光小白瓶 + 次抛精华（玻尿酸）"], ["深度抗衰 40+岁", "胶原闪充精华 + 日防夜护套盒"], ["懒人方案", "次抛精华早晚各1支，简单有效"]]}, "面霜": {"tips": [["干皮保湿", "赋活保湿精华霜（首选）"], ["敏感修护", "赋活舒缓精华乳霜（含神经酰胺）"], ["抗皱紧致", "金绷带面霜2.0（最高端线）"], ["更年期核心", "琥珀油霜（核心大单品）"]]}, "乳液": {"tips": [["油皮/混皮", "玻色因臻颜乳"], ["敏感肌/潮热肌", "赋活舒缓精华乳（5重神经酰胺，退红修复）"], ["干皮缺水", "赋活保湿精华乳"]]}, "眼部": {"tips": [["眼纹干纹多", "淡纹紧致眼膜套 + 眼部紫熨斗"], ["眼袋/黑眼圈", "紧致小黑瓶 + 胶原逆龄熨纹眼膜"], ["懒人眼部抗衰", "眼脸全能紧致乳（全脸可用）"]]}, "面膜": {"tips": [["急救护肤", "黄金胶原面膜（自热发热，北方冬天首选）"], ["深度抗衰", "逆龄油养膜（油敷法概念）"], ["美白祛黄", "极光赋活精华面膜组合"], ["高效懒人", "双胶原冻干面膜（一片减褪干纹垮糙）"]]}, "洁面": {"tips": [["干皮/敏感肌", "琥珀逆龄洁颜蜜（最温和，洗卸养三合一）"], ["化妆/防晒多", "玫瑰卸妆油 + 玫瑰洗面奶组合"], ["懒人一瓶", "玫瑰洗面奶（洗卸合一）"]]}};
+var ingData=[["玻色因", "促胶原、抗衰紧致", "金绷带面霜2.0、紫绷带、精华全线"], ["专利胶原蛋白", "胶原直补、嘭弹紧致", "胶原闪充精华、黄金软膜、眼膜全线"], ["PDRN/三文鱼", "激活细胞、修护损伤", "油霜、发光水、胶原弹"], ["神经酰胺", "屏障修复、锁水", "赋活舒缓精华乳/霜、赋活保湿精华乳"], ["依克多因", "抗敏舒缓、屏障强韧", "日防夜护精华、次抛精华"], ["烟酰胺", "提亮抑黑、均匀肤色", "水光小白瓶、素颜乳、次抛精华"], ["大豆异黄酮", "补充雌激素、抗衰老", "琥珀油霜核心成分"], ["六重更年油", "蛋黄/月见草/白池花等6种", "琥珀油霜核心成分"], ["多肽/胜肽", "精准淡纹、紧致轮廓", "眼霜、面霜、精华全线"], ["海茴香", "细胞修护、抗氧焕活", "调肤水、紫绷带面霜、精华"], ["肌肽", "抗糖化，保护胶原", "眼膜、冻干面膜"]];
+var plans=[{"n": "干皮抗衰方案", "b": "总预算 1000-2000", "it": ["发光水/细胞水", "次抛精华（玻尿酸）", "精华/油霜", "面霜", "黄金软膜每周3次"]}, {"n": "敏感修护方案", "b": "总预算 800-1500", "it": ["舒缓修护喷雾", "赋活舒缓精华乳", "赋活舒缓精华乳霜", "舒缓软膜/黄金软膜"]}, {"n": "油霜主推方案", "b": "总预算 2000+", "it": ["琥珀油霜（核心）", "精华水打底", "胶原闪充精华", "黄金面膜搭配"]}, {"n": "眼部专项方案", "b": "总预算 800-1500", "it": ["眼脸全能紧致乳", "淡纹紧致眼膜套", "眼部紫熨斗"]}, {"n": "懒人高客单方案", "b": "总预算 3000+", "it": ["胶原闪充精华（日）", "日防夜护精华套盒", "金绷带面霜2.0", "胶原PAO美容仪"]}];
+
+function card(p,i){
+  var tags=p.tg.map(function(t){return'<span class="tag '+p.tt+'">'+t+'</span>'}).join('');
+  var ings=p.i.slice(0,4).map(function(x){return'<span class="ing">'+x+'</span>'}).join('');
+  return'<div class="card" style="animation-delay:'+(i*0.04)+'s"><div class="ctop"><div class="cn">'+p.n+'</div><div><div class="cp">'+p.p+'</div><div class="csz">'+p.s+'</div></div></div><div class="ctags">'+tags+'</div><div class="chr"></div><div class="cdesc">'+p.d+'</div><div class="cing">'+ings+'</div><div class="cskin">适用：'+p.sk+'</div></div>';
+}
+
+function recBox(cat){
+  var m=catMeta[cat];
+  if(!m)return'';
+  var h='<div class="rec-box"><div class="rec-hdr"><span class="rec-hdr-title">&#x1F4A1; 私域推荐场景</span></div><div class="rec-body">';
+  m.tips.forEach(function(t){h+='<div class="rec-row"><span class="rec-scene">'+t[0]+'</span><span class="rec-val">'+t[1]+'</span></div>';});
+  h+='</div></div>';
+  return h;
+}
+
+function render(cat,kw){
+  kw=(kw||'').toLowerCase();
+  var mw=document.getElementById('mainWrap');
+  var sc=document.getElementById('scnt');
+  var h='';
+  if(cat==='私域'){
+    sc.textContent='5 套搭配方案';
+    h+='<div class="combo-grid">';
+    plans.forEach(function(c){
+      h+='<div class="combo-card"><div class="combo-top"><div class="combo-name">'+c.n+'</div><div class="combo-budget">'+c.b+'</div></div><div class="combo-body">';
+      c.it.forEach(function(x){h+='<div class="combo-step">'+x+'</div>';});
+      h+='</div></div>';
+    });
+    h+='</div>';
+  }else if(cat==='成分'){
+    sc.textContent='11 个核心成分';
+    h+='<table class="ing-table"><thead><tr><th>成分名称</th><th>核心功效</th><th>代表产品</th></tr></thead><tbody>';
+    ingData.forEach(function(r){
+      var star=r[2].indexOf('油霜')>-1;
+      h+='<tr><td class="'+(star?'ing-star':'ing-name')+'">'+r[0]+'</td><td class="ing-effect">'+r[1]+'</td><td class="ing-prod">'+r[2]+'</td></tr>';
+    });
+    h+='</tbody></table>';
+  }else if(cat==='qa'){
+    sc.textContent='8 个常见问题';
+    h+='<div class="qa-grid">';
+    qas.forEach(function(q){h+='<div class="qa-card"><div class="qq">'+q.q+'</div><div class="qa">'+q.a+'</div></div>';});
+    h+='</div>';
+  }else{
+    var f=P.filter(function(p){
+      if(cat!=='all'&&p.c!==cat)return false;
+      if(kw){var s=(p.n+p.d+p.sk+p.i.join('')).toLowerCase();return s.indexOf(kw)>-1;}
+      return true;
+    });
+    sc.textContent=f.length+' 个产品';
+    var by={};
+    f.forEach(function(p){if(!by[p.c])by[p.c]=[];by[p.c].push(p);});
+    var cats=cat==='all'?Object.keys(by).sort():[cat];
+    cats.forEach(function(c){
+      h+='<div class="seg-hdr"><span class="seg-title">'+(catNames[c]||c)+'</span><span class="seg-sub">'+by[c].length+'款</span></div>';
+      if(catMeta[c])h+=recBox(c);
+      h+='<div class="cards">';
+      by[c].forEach(function(p,i){h+=card(p,i);});
+      h+='</div>';
+    });
+    if(f.length===0)h+='<div class="empty">&#x6CA1;&#x6709;&#x627E;&#x5230;&#xFF0C;&#x8BD5;&#x8BD5;&#x5176;&#x4ED6;&#x5173;&#x952E;&#x8BCD;</div>';
+  }
+  mw.innerHTML=h;
+}
+
+document.getElementById('tabs').addEventListener('click',function(e){
+  var btn=e.target.closest('.tab');
+  if(!btn)return;
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('on');});
+  btn.classList.add('on');
+  render(btn.dataset.cat,document.getElementById('si').value);
+});
+document.getElementById('si').addEventListener('input',function(e){
+  var a=document.querySelector('.tab.on');
+  render(a?a.dataset.cat:'all',e.target.value);
+});
+render('all','');
+</script>
+</body>
+</html>
