@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>私域订单复购分析看板 | 两个博士后</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: #FDF8F5;
+  --card-bg: #FFFFFF;
+  --primary: #5C1A33;
+  --primary-light: #8B2F54;
+  --accent: #C8965A;
+  --accent-light: #E8C9A0;
+  --text: #2D1B1E;
+  --text-muted: #8A6F73;
+  --border: #F0E4DF;
+  --success: #2D7D5F;
+  --warning: #D4881A;
+  --danger: #C0392B;
+  --shadow: 0 2px 16px rgba(92,26,51,0.08);
+  --shadow-hover: 0 8px 32px rgba(92,26,51,0.14);
+  --radius: 16px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Noto Sans SC', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+.header {
+  background: linear-gradient(135deg, #5C1A33 0%, #8B2F54 50%, #A84060 100%);
+  color: white;
+  padding: 48px 40px 40px;
+  position: relative;
+  overflow: hidden;
+}
+.header::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 300px; height: 300px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+}
+.header::after {
+  content: '';
+  position: absolute;
+  bottom: -80px; left: 20%;
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.03);
+}
+.header-content { max-width: 1400px; margin: 0 auto; position: relative; z-index: 1; }
+.header-eyebrow {
+  font-size: 12px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  opacity: 0.7;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+.header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.header-meta {
+  display: flex;
+  gap: 32px;
+  margin-top: 20px;
+  font-size: 14px;
+  opacity: 0.85;
+}
+.header-meta span { display: flex; align-items: center; gap: 6px; }
+.header-meta strong { font-weight: 600; }
+
+.container { max-width: 1400px; margin: 0 auto; padding: 32px 24px; }
+
+/* KPI Row */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+.kpi-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: 1px solid var(--border);
+  animation: fadeUp 0.6s ease both;
+}
+.kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+.kpi-card:nth-child(1) { animation-delay: 0.05s; }
+.kpi-card:nth-child(2) { animation-delay: 0.1s; }
+.kpi-card:nth-child(3) { animation-delay: 0.15s; }
+.kpi-card:nth-child(4) { animation-delay: 0.2s; }
+.kpi-card:nth-child(5) { animation-delay: 0.25s; }
+.kpi-card:nth-child(6) { animation-delay: 0.3s; }
+
+.kpi-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+.kpi-value {
+  font-family: 'Playfair Display', serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--primary);
+  line-height: 1.1;
+}
+.kpi-sub {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+.kpi-delta {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-top: 6px;
+}
+.kpi-delta.up { background: #E8F5EE; color: var(--success); }
+.kpi-delta.down { background: #FDECEA; color: var(--danger); }
+.kpi-delta.neutral { background: #F5F0FA; color: #7B5EA7; }
+
+/* Section */
+.section { margin-bottom: 40px; }
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.section-title::before {
+  content: '';
+  width: 4px;
+  height: 22px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+/* Cards */
+.card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  padding: 28px;
+  margin-bottom: 20px;
+  animation: fadeUp 0.6s ease both;
+}
+.card:hover { box-shadow: var(--shadow-hover); }
+
+/* Transition Cards */
+.transition-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
+.t-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  padding: 24px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.t-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+}
+.t-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover);
+}
+.t-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.t-step {
+  font-family: 'Playfair Display', serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--primary);
+}
+.t-count-badge {
+  background: var(--primary);
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+.t-metric {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+.t-metric:last-child { border-bottom: none; }
+.t-metric-label { color: var(--text-muted); }
+.t-metric-value { font-weight: 600; color: var(--text); }
+.t-metric-value.highlight { color: var(--primary); font-size: 16px; }
+.t-arrow {
+  text-align: center;
+  color: var(--accent);
+  font-size: 20px;
+  padding: 4px 0;
+}
+
+/* Insight Cards */
+.insight-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+  gap: 20px;
+}
+.insight-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  padding: 24px;
+  display: flex;
+  gap: 16px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  animation: fadeUp 0.6s ease both;
+}
+.insight-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+}
+.insight-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.insight-icon.loyalty { background: #F5EDF9; }
+.insight-icon.member { background: #E8F5EE; }
+.insight-icon.amount { background: #FDF3E8; }
+.insight-icon.product { background: #EDF4FF; }
+.insight-icon.funnel { background: #FDF8F5; border: 1px solid var(--border); }
+
+.insight-body h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.insight-body .insight-business {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+.insight-body .insight-observation {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.7;
+  margin-bottom: 10px;
+  padding: 10px 12px;
+  background: var(--bg);
+  border-radius: 8px;
+  border-left: 3px solid var(--accent);
+}
+.insight-body .insight-action {
+  font-size: 12px;
+  color: var(--primary);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.insight-body .insight-action::before { content: '→'; }
+
+/* Chart containers */
+.chart-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+.chart-grid-3 {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+.chart-container {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  padding: 24px;
+  animation: fadeUp 0.6s ease both;
+}
+.chart-container h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 16px;
+}
+.chart-wrap { position: relative; height: 240px; }
+.chart-wrap.tall { height: 300px; }
+
+/* Retention heatmap */
+.heatmap-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  margin-top: 16px;
+}
+.heatmap-table th {
+  padding: 8px 12px;
+  background: var(--primary);
+  color: white;
+  font-weight: 500;
+  text-align: center;
+}
+.heatmap-table th:first-child { border-radius: 8px 0 0 0; }
+.heatmap-table th:last-child { border-radius: 0 8px 0 0; }
+.heatmap-table td {
+  padding: 8px 12px;
+  text-align: center;
+  border: 1px solid var(--border);
+  font-weight: 500;
+}
+.heatmap-table td:first-child {
+  background: var(--bg);
+  font-weight: 600;
+  color: var(--primary);
+}
+.heatmap-table tr:last-child td:first-child { border-radius: 0 0 0 8px; }
+.heatmap-table tr:last-child td:last-child { border-radius: 0 0 8px 0; }
+
+/* Funnel */
+.funnel-container {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  padding: 20px 0;
+}
+.funnel-left { flex: 1; }
+.funnel-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.funnel-bar-wrap {
+  flex: 1;
+  height: 36px;
+  background: var(--bg);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.funnel-bar {
+  height: 100%;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  padding-left: 12px;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  transition: width 1s ease;
+  min-width: 60px;
+}
+.funnel-label { font-size: 13px; font-weight: 500; color: var(--text); width: 60px; text-align: right; }
+.funnel-num { font-size: 13px; font-weight: 600; color: var(--text-muted); width: 50px; text-align: right; }
+
+.funnel-right {
+  background: var(--bg);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  border: 1px solid var(--border);
+  min-width: 200px;
+}
+.funnel-right h4 { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
+.funnel-stat { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; font-size: 13px; }
+.funnel-stat-label { color: var(--text-muted); }
+.funnel-stat-val { font-weight: 600; color: var(--primary); }
+
+/* Tags */
+.tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+.tag-red { background: #FDECEA; color: var(--danger); }
+.tag-green { background: #E8F5EE; color: var(--success); }
+.tag-gold { background: #FDF3E8; color: var(--warning); }
+.tag-purple { background: #F5EDF9; color: #7B5EA7; }
+.tag-blue { background: #EDF4FF; color: #3B6FD4; }
+
+/* Animations */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Summary box */
+.summary-box {
+  background: linear-gradient(135deg, #5C1A33 0%, #8B2F54 100%);
+  border-radius: var(--radius);
+  padding: 28px 32px;
+  color: white;
+  margin-bottom: 32px;
+  animation: fadeUp 0.6s ease both;
+}
+.summary-box h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  margin-bottom: 16px;
+  opacity: 0.95;
+}
+.summary-list { display: flex; flex-direction: column; gap: 10px; }
+.summary-list li {
+  font-size: 14px;
+  line-height: 1.7;
+  padding-left: 20px;
+  position: relative;
+  opacity: 0.92;
+}
+.summary-list li::before {
+  content: '◆';
+  position: absolute;
+  left: 0;
+  color: var(--accent-light);
+  font-size: 8px;
+  top: 6px;
+}
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 32px;
+  color: var(--text-muted);
+  font-size: 12px;
+  border-top: 1px solid var(--border);
+  margin-top: 40px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header { padding: 32px 20px; }
+  .header h1 { font-size: 26px; }
+  .container { padding: 20px 12px; }
+  .chart-grid, .chart-grid-3, .insight-grid { grid-template-columns: 1fr; }
+  .funnel-container { flex-direction: column; }
+  .kpi-row { grid-template-columns: repeat(2, 1fr); }
+  .header-meta { flex-direction: column; gap: 8px; }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-content">
+    <div class="header-eyebrow">私域运营数据分析</div>
+    <h1>订单复购转化分析看板</h1>
+    <p style="opacity:0.8; font-size:15px;">两个博士后 · 腾讯组 · 2025.11.01 – 2026.04.21 · 剔除1元订单</p>
+    <div class="header-meta">
+      <span><strong>7,236</strong> 笔订单</span>
+      <span><strong>2,872</strong> 位用户</span>
+      <span><strong>6</strong> 个月周期</span>
+      <span>数据截至 2026-04-21</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- KPI Summary -->
+  <div class="kpi-row">
+    <div class="kpi-card">
+      <div class="kpi-label">整体复购率</div>
+      <div class="kpi-value">44.8%</div>
+      <div class="kpi-sub">1287/2872 用户完成第2单</div>
+      <span class="kpi-delta neutral">二单留存基准</span>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">第2单平均间隔</div>
+      <div class="kpi-value">16.5<span style="font-size:16px;">天</span></div>
+      <div class="kpi-sub">中位数 4 天 · 75分位 19 天</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">首单→二单客单价变化</div>
+      <div class="kpi-value" style="color: var(--success);">+6.8%</div>
+      <div class="kpi-sub">¥199 → ¥213 · 持续提升型</div>
+      <span class="kpi-delta up">客单增长</span>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">第1单非会员转会员率</div>
+      <div class="kpi-value">34.6%</div>
+      <div class="kpi-sub">179/518 人 · 最高转化节点</div>
+      <span class="kpi-delta up">会员转化黄金期</span>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">忠诚用户（5单+）</div>
+      <div class="kpi-value">350<span style="font-size:16px;">人</span></div>
+      <div class="kpi-sub">占比 12.2% · 平均客单 ¥230</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">流失用户（仅2单）</div>
+      <div class="kpi-value">537<span style="font-size:16px;">人</span></div>
+      <div class="kpi-sub">首单客单 ¥206 · 有激活空间</div>
+      <span class="kpi-delta down">待激活</span>
+    </div>
+  </div>
+
+  <!-- Executive Summary -->
+  <div class="summary-box">
+    <h2>📊 核心洞察速览</h2>
+    <ul class="summary-list">
+      <li><strong>复购黄金窗口：D0-D4。</strong> 整体复购间隔中位数仅4天，41.5%的用户在首单后16天内完成第2单，第2-3单的间隔更短（16天），说明用户在购买决策上有明确需求延续性，需在D3-D7密集触达。</li>
+      <li><strong>客单价持续跃升。</strong> 1→2单客单增长6.8%（¥199→¥213），2→3单增长8.4%（¥200→¥217），3→4单增长3.6%。复购用户天然有更强的购买信心，每一单都在积累信任，客单提升空间大。</li>
+      <li><strong>会员转化越早越好。</strong> 首单非会员在第2单的会员转化率高达34.6%，之后逐级下降（2→3单26.9%，3→4单13.4%）。<strong>第1→2单是会员转化最关键的节点</strong>，错过即流失。</li>
+      <li><strong>商品变化率极高（97%+），SKU宽度是复购驱动力。</strong> 几乎所有复购用户都换了商品，说明私域用户有强烈的品类探索需求，搭配套餐/加购推荐空间巨大。</li>
+      <li><strong>5单+忠诚用户是核心资产。</strong> 350人（12.2%）贡献了高客单（¥230），应建立VIP分层运营体系，同时对537人的"2单流失用户"设计专项激活方案。</li>
+    </ul>
+  </div>
+
+  <!-- Section 1: Transition Cards -->
+  <div class="section">
+    <div class="section-title">逐单转化分析</div>
+    <div class="transition-grid">
+      <div class="t-card" style="animation-delay:0.05s">
+        <div class="t-card-header">
+          <span class="t-step">第1单 → 第2单</span>
+          <span class="t-count-badge">1,287人</span>
+        </div>
+        <div class="t-metric"><span class="t-metric-label">平均间隔</span><span class="t-metric-value highlight">16.5天</span></div>
+        <div class="t-metric"><span class="t-metric-label">间隔中位数</span><span class="t-metric-value">4天</span></div>
+        <div class="t-metric"><span class="t-metric-label">75分位间隔</span><span class="t-metric-value">19天</span></div>
+        <div class="t-arrow">↑</div>
+        <div class="t-metric"><span class="t-metric-label">客单价变化</span><span class="t-metric-value" style="color:var(--success)">¥199 → ¥213 (+6.8%)</span></div>
+        <div class="t-metric"><span class="t-metric-label">客单提升占比</span><span class="t-metric-value">41.5%</span></div>
+        <div class="t-metric"><span class="t-metric-label">商品变化率</span><span class="t-metric-value">99.7%</span></div>
+        <div class="t-metric"><span class="t-metric-label">会员转化</span><span class="t-metric-value" style="color:var(--success)">179/518 (34.6%)</span></div>
+      </div>
+      <div class="t-card" style="animation-delay:0.1s">
+        <div class="t-card-header">
+          <span class="t-step">第2单 → 第3单</span>
+          <span class="t-count-badge">750人</span>
+        </div>
+        <div class="t-metric"><span class="t-metric-label">平均间隔</span><span class="t-metric-value highlight">16.0天</span></div>
+        <div class="t-metric"><span class="t-metric-label">间隔中位数</span><span class="t-metric-value">5天</span></div>
+        <div class="t-metric"><span class="t-metric-label">75分位间隔</span><span class="t-metric-value">18天</span></div>
+        <div class="t-arrow">↑</div>
+        <div class="t-metric"><span class="t-metric-label">客单价变化</span><span class="t-metric-value" style="color:var(--success)">¥200 → ¥217 (+8.4%)</span></div>
+        <div class="t-metric"><span class="t-metric-label">客单提升占比</span><span class="t-metric-value">52.5%</span></div>
+        <div class="t-metric"><span class="t-metric-label">商品变化率</span><span class="t-metric-value">98.9%</span></div>
+        <div class="t-metric"><span class="t-metric-label">会员转化</span><span class="t-metric-value">47/175 (26.9%)</span></div>
+      </div>
+      <div class="t-card" style="animation-delay:0.15s">
+        <div class="t-card-header">
+          <span class="t-step">第3单 → 第4单</span>
+          <span class="t-count-badge">494人</span>
+        </div>
+        <div class="t-metric"><span class="t-metric-label">平均间隔</span><span class="t-metric-value highlight">16.5天</span></div>
+        <div class="t-metric"><span class="t-metric-label">间隔中位数</span><span class="t-metric-value">5天</span></div>
+        <div class="t-metric"><span class="t-metric-label">75分位间隔</span><span class="t-metric-value">18天</span></div>
+        <div class="t-arrow">↑</div>
+        <div class="t-metric"><span class="t-metric-label">客单价变化</span><span class="t-metric-value" style="color:var(--success)">¥235 → ¥244 (+3.6%)</span></div>
+        <div class="t-metric"><span class="t-metric-label">客单提升占比</span><span class="t-metric-value">51.8%</span></div>
+        <div class="t-metric"><span class="t-metric-label">商品变化率</span><span class="t-metric-value">99.4%</span></div>
+        <div class="t-metric"><span class="t-metric-label">会员转化</span><span class="t-metric-value">11/82 (13.4%)</span></div>
+      </div>
+      <div class="t-card" style="animation-delay:0.2s">
+        <div class="t-card-header">
+          <span class="t-step">第4单 → 第5单</span>
+          <span class="t-count-badge">350人</span>
+        </div>
+        <div class="t-metric"><span class="t-metric-label">平均间隔</span><span class="t-metric-value highlight">12.1天</span></div>
+        <div class="t-metric"><span class="t-metric-label">间隔中位数</span><span class="t-metric-value">3天</span></div>
+        <div class="t-metric"><span class="t-metric-label">75分位间隔</span><span class="t-metric-value">14天</span></div>
+        <div class="t-arrow">↓</div>
+        <div class="t-metric"><span class="t-metric-label">客单价变化</span><span class="t-metric-value" style="color:var(--warning)">¥260 → ¥254 (−2.2%)</span></div>
+        <div class="t-metric"><span class="t-metric-label">客单提升占比</span><span class="t-metric-value">46.9%</span></div>
+        <div class="t-metric"><span class="t-metric-label">商品变化率</span><span class="t-metric-value">97.7%</span></div>
+        <div class="t-metric"><span class="t-metric-label">会员转化</span><span class="t-metric-value">5/49 (10.2%)</span></div>
+      </div>
+      <div class="t-card" style="animation-delay:0.25s">
+        <div class="t-card-header">
+          <span class="t-step">第5单 → 第6单</span>
+          <span class="t-count-badge">260人</span>
+        </div>
+        <div class="t-metric"><span class="t-metric-label">平均间隔</span><span class="t-metric-value highlight">12.1天</span></div>
+        <div class="t-metric"><span class="t-metric-label">间隔中位数</span><span class="t-metric-value">3天</span></div>
+        <div class="t-metric"><span class="t-metric-label">75分位间隔</span><span class="t-metric-value">13天</span></div>
+        <div class="t-arrow">↓</div>
+        <div class="t-metric"><span class="t-metric-label">客单价变化</span><span class="t-metric-value" style="color:var(--warning)">¥251 → ¥249 (−0.8%)</span></div>
+        <div class="t-metric"><span class="t-metric-label">客单提升占比</span><span class="t-metric-value">47.7%</span></div>
+        <div class="t-metric"><span class="t-metric-label">商品变化率</span><span class="t-metric-value">97.3%</span></div>
+        <div class="t-metric"><span class="t-metric-label">会员转化</span><span class="t-metric-value">1/34 (2.9%)</span></div>
+      </div>
+    </div>
+    <div class="card" style="animation-delay:0.3s">
+      <p style="font-size:13px; color:var(--text-muted); line-height:1.8;">
+        <strong style="color:var(--text)">💡 关键规律：</strong>复购间隔呈现明显的"<strong>快-慢-快</strong>"节奏。前3单的复购间隔稳定在16天左右，到第4-5单间隔缩短至12天，说明<strong>忠诚用户购买频次在加快</strong>，是建立高频购买习惯的关键期。客单价在第1→3单持续攀升，第4单开始出现小幅回落，与用户品类探索趋于饱和有关。
+      </p>
+    </div>
+  </div>
+
+  <!-- Section 2: Charts -->
+  <div class="section">
+    <div class="section-title">数据可视化</div>
+    <div class="chart-grid">
+      <div class="chart-container">
+        <h3>客单价变化趋势（逐单）</h3>
+        <div class="chart-wrap">
+          <canvas id="chartAmount"></canvas>
+        </div>
+      </div>
+      <div class="chart-container">
+        <h3>用户留存漏斗</h3>
+        <div class="chart-wrap">
+          <canvas id="chartFunnel"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="chart-grid">
+      <div class="chart-container">
+        <h3>各阶段复购间隔分布（天）</h3>
+        <div class="chart-wrap">
+          <canvas id="chartInterval"></canvas>
+        </div>
+      </div>
+      <div class="chart-container">
+        <h3>客单变化率：提升 vs 下降</h3>
+        <div class="chart-wrap">
+          <canvas id="chartUpDown"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="chart-grid">
+      <div class="chart-container">
+        <h3>会员转化漏斗（非会员起点）</h3>
+        <div class="chart-wrap tall">
+          <canvas id="chartMember"></canvas>
+        </div>
+      </div>
+      <div class="chart-container">
+        <h3>月度新客留存率（2单+/3单+）</h3>
+        <div class="chart-wrap tall">
+          <canvas id="chartCohort"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Section 3: Monthly Cohort Heatmap -->
+  <div class="section">
+    <div class="section-title">月度新客留存矩阵</div>
+    <div class="card">
+      <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">各月份新客在后续各节点的留存人数与留存率（括号内为占比）</p>
+      <div style="overflow-x:auto;">
+        <table class="heatmap-table">
+          <thead>
+            <tr>
+              <th>新客月份</th>
+              <th>新客数</th>
+              <th>完成2单</th>
+              <th>完成3单</th>
+              <th>完成4单</th>
+              <th>完成5单</th>
+              <th>完成6单+</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>2025-11</td>
+              <td>681</td>
+              <td style="background:#E8F5EE; color:#2D7D5F; font-weight:700;">379 <span style="font-size:11px; opacity:0.7">(56%)</span></td>
+              <td style="background:#D4EDD9; color:#2D7D5F; font-weight:700;">265 <span style="font-size:11px; opacity:0.7">(39%)</span></td>
+              <td style="background:#C0E3C3; color:#1B5E3A; font-weight:700;">187 <span style="font-size:11px; opacity:0.7">(27%)</span></td>
+              <td style="background:#A8D7AB; color:#1B5E3A; font-weight:700;">130 <span style="font-size:11px; opacity:0.7">(19%)</span></td>
+              <td style="background:#8FCB96; color:#1B5E3A; font-weight:700;">92 <span style="font-size:11px; opacity:0.7">(14%)</span></td>
+              <td style="background:#7AC284; color:#1B5E3A; font-weight:700;">69 <span style="font-size:11px; opacity:0.7">(10%)</span></td>
+            </tr>
+            <tr>
+              <td>2025-12</td>
+              <td>695</td>
+              <td style="background:#E8F5EE; color:#2D7D5F; font-weight:700;">327 <span style="font-size:11px; opacity:0.7">(47%)</span></td>
+              <td style="background:#D4EDD9; color:#2D7D5F; font-weight:700;">195 <span style="font-size:11px; opacity:0.7">(28%)</span></td>
+              <td style="background:#C0E3C3; color:#1B5E3A; font-weight:700;">126 <span style="font-size:11px; opacity:0.7">(18%)</span></td>
+              <td style="background:#B0D9AE; color:#1B5E3A; font-weight:700;">83 <span style="font-size:11px; opacity:0.7">(12%)</span></td>
+              <td style="background:#A0CF9F; color:#1B5E3A; font-weight:700;">60 <span style="font-size:11px; opacity:0.7">(9%)</span></td>
+              <td style="background:#8FCB96; color:#1B5E3A; font-weight:700;">40 <span style="font-size:11px; opacity:0.7">(6%)</span></td>
+            </tr>
+            <tr>
+              <td>2026-01</td>
+              <td>444</td>
+              <td style="background:#E8F5EE; color:#2D7D5F; font-weight:700;">205 <span style="font-size:11px; opacity:0.7">(46%)</span></td>
+              <td style="background:#D4EDD9; color:#2D7D5F; font-weight:700;">124 <span style="font-size:11px; opacity:0.7">(28%)</span></td>
+              <td style="background:#C8E6C5; color:#2D7D5F; font-weight:700;">80 <span style="font-size:11px; opacity:0.7">(18%)</span></td>
+              <td style="background:#B5DBA6; color:#2D7D5F; font-weight:700;">54 <span style="font-size:11px; opacity:0.7">(12%)</span></td>
+              <td style="background:#A8CF9E; color:#2D7D5F; font-weight:700;">39 <span style="font-size:11px; opacity:0.7">(9%)</span></td>
+              <td style="background:#9AC598; color:#1B5E3A; font-weight:700;">26 <span style="font-size:11px; opacity:0.7">(6%)</span></td>
+            </tr>
+            <tr>
+              <td>2026-02</td>
+              <td>543</td>
+              <td style="background:#DFF5E3; color:#2D7D5F; font-weight:700;">242 <span style="font-size:11px; opacity:0.7">(45%)</span></td>
+              <td style="background:#D4EDD9; color:#2D7D5F; font-weight:700;">109 <span style="font-size:11px; opacity:0.7">(20%)</span></td>
+              <td style="background:#C8E6C5; color:#2D7D5F; font-weight:700;">65 <span style="font-size:11px; opacity:0.7">(12%)</span></td>
+              <td style="background:#B5DBA6; color:#2D7D5F; font-weight:700;">41 <span style="font-size:11px; opacity:0.7">(8%)</span></td>
+              <td style="background:#AAD4A4; color:#2D7D5F; font-weight:700;">26 <span style="font-size:11px; opacity:0.7">(5%)</span></td>
+              <td style="background:#9FCF9A; color:#2D7D5F; font-weight:700;">17 <span style="font-size:11px; opacity:0.7">(3%)</span></td>
+            </tr>
+            <tr>
+              <td>2026-03</td>
+              <td>302</td>
+              <td style="background:#E0F0DB; color:#2D7D5F; font-weight:700;">102 <span style="font-size:11px; opacity:0.7">(34%)</span></td>
+              <td style="background:#D0E8CF; color:#2D7D5F; font-weight:700;">49 <span style="font-size:11px; opacity:0.7">(16%)</span></td>
+              <td style="background:#C5E5C0; color:#2D7D5F; font-weight:700;">31 <span style="font-size:11px; opacity:0.7">(10%)</span></td>
+              <td style="background:#BBE0B6; color:#2D7D5F; font-weight:700;">18 <span style="font-size:11px; opacity:0.7">(6%)</span></td>
+              <td style="background:#B1D9AE; color:#2D7D5F; font-weight:700;">10 <span style="font-size:11px; opacity:0.7">(3%)</span></td>
+              <td style="background:#A8D4A7; color:#2D7D5F; font-weight:700;">6 <span style="font-size:11px; opacity:0.7">(2%)</span></td>
+            </tr>
+            <tr>
+              <td>2026-04</td>
+              <td>208</td>
+              <td style="background:#F5F0FA; color:#7B5EA7; font-weight:700;">32 <span style="font-size:11px; opacity:0.7">(15%)</span></td>
+              <td style="background:#EDE5F7; color:#7B5EA7; font-weight:700;">8 <span style="font-size:11px; opacity:0.7">(4%)</span></td>
+              <td style="background:#E8DEF5; color:#7B5EA7;">3 <span style="font-size:11px; opacity:0.7">(1%)</span></td>
+              <td style="background:#E5DBF3;">1 <span style="font-size:11px; opacity:0.7">(0.3%)</span></td>
+              <td style="background:#E0D6F0;">0</td>
+              <td style="background:#DCD6EE;">0</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:12px; color:var(--text-muted); margin-top:12px;">
+        颜色越绿留存率越高。2025-11月新客（681人）留存率最优，6单+留存率达10%；2026-04数据尚新，参考价值有限。
+      </p>
+    </div>
+  </div>
+
+  <!-- Section 4: Detailed Insights -->
+  <div class="section">
+    <div class="section-title">深度洞察与运营建议</div>
+    <div class="insight-grid">
+
+      <!-- Insight 1: 忠诚度 -->
+      <div class="insight-card" style="animation-delay:0.05s">
+        <div class="insight-icon loyalty">💎</div>
+        <div class="insight-body">
+          <h3>用户购买忠诚度：阶梯式衰减，3单是关键分水岭</h3>
+          <div class="insight-business"><span class="tag tag-purple">业务价值</span> 识别用户忠诚度发展阶段，定向设计留存策略</div>
+          <div class="insight-observation">
+            <strong>数据洞察：</strong>从2单→3单，留存用户从1287人降至750人（流失41.7%）；但过了第3单后，用户流失率大幅降低，5单+用户仅350人，且购买间隔缩短至12天，客单稳定在¥250+，进入高价值忠诚期。<br><br>
+            <strong>关键节点：</strong>第1→2单流失率55.2%，第2→3单流失率39.6%——前两单是用户流失最集中的阶段；第4单+流失率降至29%。<br><br>
+            <strong>规律：</strong>11月新客6单+留存率达10%，而02月仅3%，说明早期积累的用户忠诚度更高，大促后的新客更需要持续培育。
+          </div>
+          <div class="insight-action">
+            运营建议：针对1→2单流失用户（D7-D14未复购），自动触发"首单复购提醒+小样/优惠券"触达；针对2→3单流失用户（D14节点），推送"新品体验+老客专属价"。
+          </div>
+        </div>
+      </div>
+
+      <!-- Insight 2: 会员转化 -->
+      <div class="insight-card" style="animation-delay:0.1s">
+        <div class="insight-icon member">⭐</div>
+        <div class="insight-body">
+          <h3>会员转化：第1→2单是黄金窗口，转化率逐级递减</h3>
+          <div class="insight-business"><span class="tag tag-green">业务价值</span> 会员是高价值用户的前置标签，转化越早用户生命周期越长</div>
+          <div class="insight-observation">
+            <strong>数据洞察：</strong>首单非会员在第2单的会员转化率高达34.6%（179/518），但到第2→3单时降至26.9%（47/175），第3→4单仅13.4%，第5→6单仅2.9%。<br><br>
+            <strong>核心问题：</strong>大量用户在首单后仍然是访客身份（"买家是否会员=否"），说明<strong>会员权益对首单用户的透传不足</strong>。用户首单时对品牌信任有限，会员卡的价值感知未建立。<br><br>
+            <strong>潜力测算：</strong>若将首单会员转化率从34.6%提升至50%，预计可额外转化约80名会员用户，按会员客单¥230计算，潜在GMV增量约¥18,400+（仅计算第2单）。
+          </div>
+          <div class="insight-action">
+            运营建议：首单完成后立即推送会员权益说明（第1天），在第3天小样使用反馈触达时同步推荐会员卡；设置"限时会员注册+赠品"活动，锁定首单后的黄金7天。
+          </div>
+        </div>
+      </div>
+
+      <!-- Insight 3: 客单价跃升 -->
+      <div class="insight-card" style="animation-delay:0.15s">
+        <div class="insight-icon amount">📈</div>
+        <div class="insight-body">
+          <h3>客单价跃升：复购即升级，2→3单是客单提升最快阶段</h3>
+          <div class="insight-business"><span class="tag tag-gold">业务价值</span> 客单提升直接扩大GMV，识别跃升节点可精准推送加购</div>
+          <div class="insight-observation">
+            <strong>数据洞察：</strong>1→2单客单提升6.8%（¥199→¥213），2→3单提升8.4%（¥200→¥217），是所有阶段中客单提升幅度最大的；约31-40%的用户客单增长超过50%，26-30%的用户实现翻倍。<br><br>
+            <strong>转折点：</strong>第4单开始客单价出现小幅下滑（¥260→¥254，-2.2%），说明用户在完成品类探索后，部分进入了"固定产品"的消耗期，此时客单的驱动因素从"品类扩张"转向"品类深化"。<br><br>
+            <strong>机会点：</strong>客单下降的第4-5单阶段，恰恰是推出"套组升级/加量装"的最佳时机，通过产品组合提升整体客单。
+          </div>
+          <div class="insight-action">
+            运营建议：在2→3单阶段（D10-D14）推送"加价购套组"或"两件立减"活动；第4单后推送"年度会员礼包"锁定大单；设计SKU加购逻辑（如油霜+眼霜组合立减¥30）。
+          </div>
+        </div>
+      </div>
+
+      <!-- Insight 4: 商品跨度 -->
+      <div class="insight-card" style="animation-delay:0.2s">
+        <div class="insight-icon product">🛍️</div>
+        <div class="insight-body">
+          <h3>商品跨度：97%+用户换品，品类宽度是复购的核心驱动力</h3>
+          <div class="insight-business"><span class="tag tag-blue">业务价值</span> 商品宽度代表用户需求宽度，跨品类运营可显著提升复购频次</div>
+          <div class="insight-observation">
+            <strong>数据洞察：</strong>所有复购阶段商品变化率均超过97%，意味着几乎所有复购用户都在购买不同产品。油霜（46%订单占比）和面膜（25%）是核心品类，但用户在不同品类间交叉购买。<br><br>
+            <strong>高复购商品：</strong>面膜小样（胶原多肽，203次复购）、眼霜小样（182次）、精华水（154次）——小规格试用装是品类拓展的"敲门砖"，用户在试用后升级购买正装或套组。<br><br>
+            <strong>品类联动效应：</strong>油霜+面膜+眼霜的"护肤三件套"组合有极高的共购潜力，建议在任意单一产品购买后，智能推荐另外两件的试用装/套组。
+          </div>
+          <div class="insight-action">
+            运营建议：建立"品类推荐矩阵"——油霜首购用户推荐面膜/眼霜小样，面膜首购用户推荐油霜体验装；在订单确认页增加"品类探索加购"模块；对高复购SKU（面膜/眼霜小样）设置"买3送1"促进囤货。
+          </div>
+        </div>
+      </div>
+
+      <!-- Insight 5: 流失用户激活 -->
+      <div class="insight-card" style="animation-delay:0.25s">
+        <div class="insight-icon funnel">🎯</div>
+        <div class="insight-body">
+          <h3>流失用户激活：537名2单流失用户，首单客单¥206，有激活价值</h3>
+          <div class="insight-business"><span class="tag tag-red">业务价值</span> 激活成本远低于获取新客，2单用户已有品牌认知，转化效率高</div>
+          <div class="insight-observation">
+            <strong>数据洞察：</strong>537名用户完成第2单后未继续购买，平均首单客单¥206（接近整体均值），说明这些用户并非价格敏感型流失，而是缺乏持续的购买动力或未被有效触达。<br><br>
+            <strong>分层激活策略：</strong>
+            <br>① <strong>高价值流失（首单¥300+）</strong>：VIP客服1对1回访，推送年度礼盒/新品体验
+            <br>② <strong>中等价值（首单¥150-300）</strong>：定向推送"限时回归券+新品上市"触达
+            <br>③ <strong>低价值（首单¥<150）</strong>：自动化营销，设置"满¥199减¥20"激活券
+            <br><br>
+            <strong>触达时机：</strong>距上次购买30天、60天、90天分别触发3轮触达，以小样激活+老客专属价为钩子。
+          </div>
+          <div class="insight-action">
+            运营建议：导出537人名单，建立"沉默用户激活"自动化流程（30/60/90天触发），设置90天未回购自动转为"流失召回"组，以短信+企微双触达，配合限时专属优惠。
+          </div>
+        </div>
+      </div>
+
+      <!-- Insight 6: 忠诚用户 VIP 运营 -->
+      <div class="insight-card" style="animation-delay:0.3s">
+        <div class="insight-icon loyalty">👑</div>
+        <div class="insight-body">
+          <h3>忠诚用户（5单+）: 350人是私域核心资产，需专属VIP运营</h3>
+          <div class="insight-business"><span class="tag tag-purple">业务价值</span> 忠诚用户客单¥230，高于均值10%，且购买频次高，是口碑传播种子用户</div>
+          <div class="insight-observation">
+            <strong>数据洞察：</strong>350名5单+用户购买间隔缩短至12天（中位数3天），进入高频购买习惯期，客单稳定在¥250+，是私域中最高价值的用户群体。<br><br>
+            <strong>运营策略分层：</strong>
+            <br>① <strong>5-7单用户（潜力VIP）</strong>：推送新品优先体验、节日专属礼盒，培养品牌忠诚度
+            <br>② <strong>8单+用户（核心VIP）</strong>：专属客服1对1服务，生日礼/年度答谢，邀请进入KOC群
+            <br><br>
+            <strong>口碑放大：</strong>高频复购用户是天然的KOC（关键意见消费者），可邀请其参与产品体验官、晒单有礼等活动，实现老客带新客的裂变增长。
+          </div>
+          <div class="insight-action">
+            运营建议：建立VIP分级体系（银/金/钻），设置专属权益（优先发货、专属客服、新品试用、线下活动邀请）；对10单+用户发放"品牌挚友"身份，增强情感连接。
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  数据来源：腾讯组订单系统 · 分析周期：2025-11-01 至 2026-04-21（剔除1元订单） · 生成时间：2026-04-22
+</div>
+
+<script>
+// Chart.js global config
+Chart.defaults.font.family = "'Noto Sans SC', sans-serif";
+Chart.defaults.color = '#8A6F73';
+const PRIMARY = '#5C1A33';
+const ACCENT = '#C8965A';
+const SUCCESS = '#2D7D5F';
+const WARN = '#D4881A';
+
+const DATA = {
+  labels: ['第1单', '第2单', '第3单', '第4单', '第5单', '第6单'],
+  amounts: [199, 213, 217, 244, 254, 249],
+  counts: [2872, 1287, 750, 494, 350, 260],
+  intervals: [null, 16.5, 16.0, 16.5, 12.1, 12.1],
+  intervalsMedian: [null, 4, 5, 5, 3, 3],
+  upPct: [null, 41.5, 52.5, 51.8, 46.9, 47.7],
+  downPct: [null, 43.7, 38.7, 40.3, 44.0, 41.5],
+  samePct: [null, 0.3, 1.1, 0.6, 2.3, 2.7],
+  memberFromNon: [null, 179, 47, 11, 5, 1],
+  memberNonStart: [null, 518, 175, 82, 49, 34],
+  memberConvPct: [null, 34.6, 26.9, 13.4, 10.2, 2.9],
+};
+
+// 1. 客单价变化
+new Chart(document.getElementById('chartAmount'), {
+  type: 'bar',
+  data: {
+    labels: DATA.labels.slice(1),
+    datasets: [{
+      label: '客单价（元）',
+      data: DATA.amounts.slice(1),
+      backgroundColor: DATA.amounts.slice(1).map((v, i) =>
+        i < 3 ? PRIMARY : ACCENT
+      ),
+      borderRadius: 8,
+      borderSkipped: false,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: ctx => `客单价: ¥${ctx.raw}`
+        }
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: false,
+        min: 180, max: 280,
+        ticks: { callback: v => '¥' + v },
+        grid: { color: '#F0E4DF' }
+      },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// 2. 留存漏斗
+new Chart(document.getElementById('chartFunnel'), {
+  type: 'bar',
+  data: {
+    labels: DATA.labels,
+    datasets: [{
+      label: '用户数',
+      data: DATA.counts,
+      backgroundColor: DATA.counts.map((v, i) =>
+        i === 0 ? PRIMARY : `rgba(92,26,51,${0.3 + i*0.12})`
+      ),
+      borderRadius: 8,
+      borderSkipped: false,
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: ctx => {
+            const pct = (ctx.raw / 2872 * 100).toFixed(1);
+            return ` ${ctx.raw}人 (${pct}%)`;
+          }
+        }
+      }
+    },
+    scales: {
+      x: {
+        beginAtZero: true, max: 3000,
+        ticks: { callback: v => v >= 1000 ? (v/1000+'k') : v },
+        grid: { color: '#F0E4DF' }
+      },
+      y: { grid: { display: false } }
+    }
+  }
+});
+
+// 3. 复购间隔
+new Chart(document.getElementById('chartInterval'), {
+  type: 'bar',
+  data: {
+    labels: ['1→2单', '2→3单', '3→4单', '4→5单', '5→6单'],
+    datasets: [
+      {
+        label: '平均间隔（天）',
+        data: DATA.intervals.slice(1),
+        backgroundColor: PRIMARY,
+        borderRadius: 6,
+        borderSkipped: false,
+      },
+      {
+        label: '中位数（天）',
+        data: DATA.intervalsMedian.slice(1),
+        backgroundColor: ACCENT,
+        borderRadius: 6,
+        borderSkipped: false,
+      }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'bottom', labels: { padding: 16 } },
+      tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.raw}天` } }
+    },
+    scales: {
+      y: {
+        beginAtZero: true, max: 25,
+        ticks: { callback: v => v + '天' },
+        grid: { color: '#F0E4DF' }
+      },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// 4. 客单提升 vs 下降
+new Chart(document.getElementById('chartUpDown'), {
+  type: 'bar',
+  data: {
+    labels: ['1→2单', '2→3单', '3→4单', '4→5单', '5→6单'],
+    datasets: [
+      {
+        label: '提升占比',
+        data: DATA.upPct.slice(1),
+        backgroundColor: SUCCESS,
+        borderRadius: 6,
+        borderSkipped: false,
+      },
+      {
+        label: '下降占比',
+        data: DATA.downPct.slice(1),
+        backgroundColor: WARN,
+        borderRadius: 6,
+        borderSkipped: false,
+      }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'bottom', labels: { padding: 16 } },
+      tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.raw}%` } }
+    },
+    scales: {
+      y: {
+        beginAtZero: true, max: 70,
+        ticks: { callback: v => v + '%' },
+        grid: { color: '#F0E4DF' }
+      },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// 5. 会员转化漏斗
+new Chart(document.getElementById('chartMember'), {
+  type: 'bar',
+  data: {
+    labels: ['1→2单', '2→3单', '3→4单', '4→5单', '5→6单'],
+    datasets: [
+      {
+        label: '非会员起点人数',
+        data: DATA.memberNonStart.slice(1),
+        backgroundColor: 'rgba(200,150,90,0.3)',
+        borderColor: ACCENT,
+        borderWidth: 2,
+        borderRadius: 6,
+        borderSkipped: false,
+      },
+      {
+        label: '成功转化会员',
+        data: DATA.memberFromNon.slice(1),
+        backgroundColor: SUCCESS,
+        borderRadius: 6,
+        borderSkipped: false,
+      }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'bottom', labels: { padding: 16 } },
+      tooltip: {
+        callbacks: {
+          afterLabel: (ctx) => {
+            const idx = ctx.dataIndex;
+            const pct = DATA.memberConvPct[idx+1];
+            return `转化率: ${pct}%`;
+          }
+        }
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true, max: 600,
+        ticks: { callback: v => v + '人' },
+        grid: { color: '#F0E4DF' }
+      },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// 6. 月度新客留存
+new Chart(document.getElementById('chartCohort'), {
+  type: 'line',
+  data: {
+    labels: ['2025-11', '2025-12', '2026-01', '2026-02', '2026-03', '2026-04'],
+    datasets: [
+      {
+        label: '留存2单率',
+        data: [56, 47, 46, 45, 34, 15],
+        borderColor: PRIMARY, backgroundColor: 'rgba(92,26,51,0.1)',
+        fill: true, tension: 0.4, pointRadius: 6, pointBackgroundColor: PRIMARY,
+        borderWidth: 3,
+      },
+      {
+        label: '留存3单+率',
+        data: [39, 28, 28, 20, 16, 4],
+        borderColor: SUCCESS, backgroundColor: 'rgba(45,125,95,0.08)',
+        fill: true, tension: 0.4, pointRadius: 6, pointBackgroundColor: SUCCESS,
+        borderWidth: 3,
+      }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'bottom', labels: { padding: 16 } },
+      tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.raw}%` } }
+    },
+    scales: {
+      y: {
+        beginAtZero: true, max: 65,
+        ticks: { callback: v => v + '%' },
+        grid: { color: '#F0E4DF' }
+      },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// Scroll animations
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.style.opacity = '1';
+      e.target.style.transform = 'translateY(0)';
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.t-card, .insight-card, .card, .chart-container').forEach(el => {
+  observer.observe(el);
+});
+</script>
+</body>
+</html>
