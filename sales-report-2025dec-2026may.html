@@ -1,0 +1,1625 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>销售二部运营数据分析报告 | 2025.12 - 2026.05</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&family=Noto+Sans+SC:wght@300;400;500;700&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #151820;
+    --surface2: #1c2030;
+    --border: #252a3a;
+    --accent: #e8a87c;
+    --accent2: #c38d6b;
+    --accent3: #7ec8c8;
+    --accent4: #8eb4e8;
+    --gold: #d4af37;
+    --text: #e8e6e3;
+    --text2: #8a8899;
+    --text3: #5a5870;
+    --green: #6bc98f;
+    --red: #e87c7c;
+    --blue: #7caee8;
+    --purple: #b07ec8;
+    --pink: #e87cb0;
+    --orange: #e8b87c;
+    --teal: #7ce8d4;
+    --radius: 14px;
+    --shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans SC', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* Hero */
+  .hero {
+    position: relative;
+    padding: 80px 40px 60px;
+    text-align: center;
+    overflow: hidden;
+    background: linear-gradient(135deg, #0d0f14 0%, #1a1420 50%, #0d1218 100%);
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(ellipse at 30% 50%, rgba(200,150,100,0.06) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 30%, rgba(126,200,200,0.04) 0%, transparent 50%);
+    animation: heroFloat 20s ease-in-out infinite;
+  }
+  @keyframes heroFloat {
+    0%, 100% { transform: translate(0,0) rotate(0deg); }
+    33% { transform: translate(20px,-15px) rotate(1deg); }
+    66% { transform: translate(-10px,10px) rotate(-1deg); }
+  }
+  .hero-badge {
+    display: inline-block;
+    background: rgba(200,160,120,0.12);
+    border: 1px solid rgba(200,160,120,0.25);
+    color: var(--accent);
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 6px 18px;
+    border-radius: 30px;
+    margin-bottom: 24px;
+    animation: fadeUp 0.8s ease both;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(36px, 6vw, 64px);
+    font-weight: 900;
+    background: linear-gradient(135deg, #e8d5c0, #e8c090, #d4a574);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -1px;
+    margin-bottom: 16px;
+    animation: fadeUp 0.8s 0.1s ease both;
+  }
+  .hero p {
+    color: var(--text2);
+    font-size: 16px;
+    font-weight: 300;
+    animation: fadeUp 0.8s 0.2s ease both;
+  }
+  .hero .period {
+    display: inline-block;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 24px;
+    margin-top: 20px;
+    font-size: 14px;
+    color: var(--text2);
+    animation: fadeUp 0.8s 0.3s ease both;
+  }
+  .hero .period span { color: var(--accent); font-weight: 600; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Layout */
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+
+  /* Section */
+  .section {
+    margin-top: 60px;
+    animation: fadeUp 0.7s ease both;
+  }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+  .section-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 900;
+    color: var(--accent);
+    opacity: 0.7;
+    line-height: 1;
+  }
+  .section-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: 1px;
+  }
+  .section-sub {
+    font-size: 13px;
+    color: var(--text3);
+    margin-top: 2px;
+  }
+
+  /* KPI Cards */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+  }
+  .kpi-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px 20px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+  .kpi-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--accent);
+  }
+  .kpi-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent3));
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .kpi-card:hover::after { opacity: 1; }
+  .kpi-label {
+    font-size: 12px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+  }
+  .kpi-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.1;
+  }
+  .kpi-value.accent { color: var(--accent); }
+  .kpi-value.green { color: var(--green); }
+  .kpi-value.blue { color: var(--blue); }
+  .kpi-value.gold { color: var(--gold); }
+  .kpi-sub {
+    font-size: 11px;
+    color: var(--text3);
+    margin-top: 6px;
+  }
+
+  /* Chart Grid */
+  .chart-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .chart-grid.full { grid-template-columns: 1fr; }
+  @media(max-width: 768px) {
+    .chart-grid { grid-template-columns: 1fr; }
+  }
+
+  .chart-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+  }
+  .chart-card-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .chart-card-title::before {
+    content: '';
+    width: 4px;
+    height: 16px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+  .chart-wrap {
+    position: relative;
+    height: 280px;
+  }
+  .chart-wrap.tall { height: 340px; }
+
+  /* Insight Box */
+  .insight-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-top: 20px;
+  }
+  .insight-box.green {
+    border-left: 3px solid var(--green);
+  }
+  .insight-box.blue {
+    border-left: 3px solid var(--blue);
+  }
+  .insight-box.accent {
+    border-left: 3px solid var(--accent);
+  }
+  .insight-box.gold {
+    border-left: 3px solid var(--gold);
+  }
+  .insight-box.purple {
+    border-left: 3px solid var(--purple);
+  }
+  .insight-title {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 12px;
+  }
+  .insight-title.green { color: var(--green); }
+  .insight-title.blue { color: var(--blue); }
+  .insight-title.accent { color: var(--accent); }
+  .insight-title.gold { color: var(--gold); }
+  .insight-title.purple { color: var(--purple); }
+  .insight-ul {
+    list-style: none;
+    padding: 0;
+  }
+  .insight-ul li {
+    position: relative;
+    padding-left: 18px;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: var(--text2);
+    line-height: 1.6;
+  }
+  .insight-ul li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+  }
+  .insight-ul li strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  /* Lidan Thinking (Editable) */
+  .lidan-box {
+    background: rgba(200,160,120,0.04);
+    border: 1px dashed rgba(200,160,120,0.3);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-top: 20px;
+    position: relative;
+  }
+  .lidan-box::before {
+    content: '✎ 机会洞察';
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: rgba(200,160,120,0.6);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .lidan-textarea {
+    width: 100%;
+    min-height: 80px;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: rgba(232,213,192,0.8);
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 14px;
+    line-height: 1.8;
+    resize: vertical;
+  }
+  .lidan-textarea::placeholder {
+    color: rgba(200,160,120,0.25);
+    font-style: italic;
+  }
+
+  /* Comparison bars */
+  .compare-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .compare-label {
+    font-size: 13px;
+    color: var(--text2);
+    width: 100px;
+    flex-shrink: 0;
+  }
+  .compare-bar-wrap {
+    flex: 1;
+    background: var(--surface2);
+    border-radius: 8px;
+    height: 32px;
+    overflow: hidden;
+    position: relative;
+  }
+  .compare-bar {
+    height: 100%;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    padding-left: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: white;
+    transition: width 1s cubic-bezier(0.4,0,0.2,1);
+  }
+  .compare-bar.accent { background: linear-gradient(90deg, var(--accent), var(--accent2)); }
+  .compare-bar.green { background: linear-gradient(90deg, var(--green), #4db070); }
+  .compare-bar.blue { background: linear-gradient(90deg, var(--blue), #5a90d4); }
+  .compare-bar.gold { background: linear-gradient(90deg, var(--gold), #b8922a); }
+  .compare-bar.purple { background: linear-gradient(90deg, var(--purple), #9460a8); }
+
+  /* Table */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 16px;
+    font-size: 13px;
+  }
+  .data-table th {
+    text-align: left;
+    color: var(--text3);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    font-weight: 600;
+  }
+  .data-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid rgba(37,42,58,0.5);
+    color: var(--text2);
+  }
+  .data-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .data-table td:first-child { color: var(--text); font-weight: 500; }
+  .rank-tag {
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    text-align: center;
+    line-height: 22px;
+    font-size: 11px;
+    font-weight: 700;
+    margin-right: 8px;
+  }
+  .rank-1 { background: rgba(212,175,55,0.2); color: var(--gold); }
+  .rank-2 { background: rgba(200,168,124,0.2); color: var(--accent); }
+  .rank-3 { background: rgba(126,200,200,0.2); color: var(--accent3); }
+  .rank-other { background: rgba(90,88,112,0.3); color: var(--text3); }
+
+  /* Metric highlight */
+  .metric-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .metric-badge.up { background: rgba(107,201,143,0.15); color: var(--green); }
+  .metric-badge.down { background: rgba(232,124,124,0.15); color: var(--red); }
+  .metric-badge.neutral { background: rgba(138,136,153,0.15); color: var(--text2); }
+
+  /* Divider */
+  .section-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 60px 0;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 40px;
+    color: var(--text3);
+    font-size: 12px;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* Animate on scroll */
+  .animate-in {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .animate-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Tag */
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .tag-gold { background: rgba(212,175,55,0.15); color: var(--gold); }
+  .tag-accent { background: rgba(200,160,120,0.15); color: var(--accent); }
+  .tag-blue { background: rgba(126,200,200,0.15); color: var(--accent3); }
+  .tag-green { background: rgba(107,201,143,0.15); color: var(--green); }
+
+  /* Grid 3 */
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  @media(max-width: 900px) {
+    .grid-3 { grid-template-columns: 1fr 1fr; }
+  }
+  @media(max-width: 600px) {
+    .grid-3 { grid-template-columns: 1fr; }
+  }
+
+  .mini-kpi {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    text-align: center;
+  }
+  .mini-kpi .mk-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .mini-kpi .mk-label {
+    font-size: 12px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">私域运营数据分析</div>
+  <h1>销售二部运营分析报告</h1>
+  <p>数据驱动洞察，赋能私域商品规划</p>
+  <div class="period">数据周期：<span>2025年12月1日</span> — <span>2026年5月9日</span></div>
+</div>
+
+<div class="container">
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 一、整体数据看板 -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">01</div>
+      <div>
+        <div class="section-title">整体数据看板</div>
+        <div class="section-sub">覆盖期内的核心经营指标全景</div>
+      </div>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">总订单数</div>
+        <div class="kpi-value accent">3,416</div>
+        <div class="kpi-sub">有效订单（已排除退款）</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">总销售额</div>
+        <div class="kpi-value gold">¥379.9万</div>
+        <div class="kpi-sub">订单实收金额合计</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">购买人数</div>
+        <div class="kpi-value">1,867</div>
+        <div class="kpi-sub">去重会员数</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">订单均价</div>
+        <div class="kpi-value green">¥1,112</div>
+        <div class="kpi-sub">单笔订单平均金额</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">客单价</div>
+        <div class="kpi-value blue">¥2,035</div>
+        <div class="kpi-sub">人均贡献GMV</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">首单客户</div>
+        <div class="kpi-value">1,333</div>
+        <div class="kpi-sub">占购买总人数 71.4%</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">复购客户</div>
+        <div class="kpi-value">534</div>
+        <div class="kpi-sub">占购买总人数 28.6%</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">平均复购周期</div>
+        <div class="kpi-value accent">12.6天</div>
+        <div class="kpi-sub">复购客户两次购买间隔</div>
+      </div>
+    </div>
+
+    <div class="insight-box green" style="margin-top:20px">
+      <div class="insight-title green">💡 业务洞察</div>
+      <ul class="insight-ul">
+        <li><strong>整体质量较高：</strong>客单价（¥2,035）几乎是订单均价（¥1,112）的<strong>1.83倍</strong>，说明大量客户购买了多笔订单，复购行为明显。</li>
+        <li><strong>新客主导：</strong>71.4%为首次购买客户，说明此阶段以<strong>拉新获客</strong>为主，复购率28.6%有较大提升空间。</li>
+        <li><strong>高复购价值信号：</strong>人均订单数1.83单，客单价¥2,035，反映出私域用户的购买深度较好，但如何提升28.6%复购率是核心课题。</li>
+      </ul>
+    </div>
+
+    <div class="lidan-box">
+      <textarea class="lidan-textarea" placeholder="记录你对这组数据的思考、疑问或想法……"></textarea>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 二、月度趋势分析 -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">02</div>
+      <div>
+        <div class="section-title">月度趋势分析</div>
+        <div class="section-sub">各月销售变化规律，识别高峰与低谷</div>
+      </div>
+    </div>
+
+    <div class="chart-grid">
+      <div class="chart-card">
+        <div class="chart-card-title">月度订单量与GMV走势</div>
+        <div class="chart-wrap tall">
+          <canvas id="chartMonthly"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-title">月度客单价变化</div>
+        <div class="chart-wrap tall">
+          <canvas id="chartMonthlyACV"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:20px">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>月份</th>
+            <th>订单数</th>
+            <th>购买人数</th>
+            <th>销售额</th>
+            <th>订单均价</th>
+            <th>客单价</th>
+            <th>环比变化</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>2025年12月</td><td>877</td><td>640</td><td>¥129.0万</td><td>¥1,471</td><td>¥2,016</td><td><span class="metric-badge neutral">基准期</span></td></tr>
+          <tr><td>2026年1月</td><td>1,247</td><td>788</td><td>¥144.3万</td><td>¥1,157</td><td>¥1,831</td><td><span class="metric-badge up">↑ 11.8% GMV</span></td></tr>
+          <tr><td>2026年2月</td><td>410</td><td>257</td><td>¥39.5万</td><td>¥962</td><td>¥1,535</td><td><span class="metric-badge down">↓ 72.7% GMV</span></td></tr>
+          <tr><td>2026年3月</td><td>449</td><td>351</td><td>¥43.6万</td><td>¥970</td><td>¥1,241</td><td><span class="metric-badge up">↑ 10.4% vs 2月</span></td></tr>
+          <tr><td>2026年4月</td><td>311</td><td>196</td><td>¥17.8万</td><td>¥572</td><td>¥908</td><td><span class="metric-badge down">↓ 59.3% GMV</span></td></tr>
+          <tr><td>2026年5月</td><td>122</td><td>62</td><td>¥5.8万</td><td>¥472</td><td>¥929</td><td><span class="metric-badge down">↓ 67.7% vs 4月</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="insight-box accent" style="margin-top:20px">
+      <div class="insight-title accent">💡 业务洞察</div>
+      <ul class="insight-ul">
+        <li><strong>1月是绝对高峰：</strong>订单数（1,247单）和GMV（¥144.3万）均为最高，推测与<strong>年货节/春节前囤货</strong>强相关。</li>
+        <li><strong>2月断崖式下跌：</strong>订单量和客单价双双大幅下滑，订单均价从¥1,157跌至¥962，<strong>春节假期效应显著</strong>。</li>
+        <li><strong>4月后量价齐跌：</strong>4月客单价跌至¥908、均价¥572，说明<strong>低客单小订单占比增加</strong>，主力商品销售动力不足。</li>
+        <li><strong>持续下滑警钟：</strong>5月数据仍在下滑，需要重点关注——是自然衰减还是竞品分流？</li>
+      </ul>
+    </div>
+
+    <div class="lidan-box">
+      <textarea class="lidan-textarea" placeholder="结合你的业务节奏，这组趋势是否符合预期？4月后的下滑原因是什么？"></textarea>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 三、新客与复购结构 -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">03</div>
+      <div>
+        <div class="section-title">新客与老客结构</div>
+        <div class="section-sub">新客转化效率与老客留存质量分析</div>
+      </div>
+    </div>
+
+    <div class="chart-grid">
+      <div class="chart-card">
+        <div class="chart-card-title">客户类型占比（累计）</div>
+        <div class="chart-wrap">
+          <canvas id="chartCustomerMix"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-title">各月新客/老客订单分布</div>
+        <div class="chart-wrap">
+          <canvas id="chartMonthlyNewOld"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="insight-box blue" style="margin-top:20px">
+      <div class="insight-title blue">💡 业务洞察</div>
+      <ul class="insight-ul">
+        <li><strong>1月新客爆发：</strong>单月新增650名新客（占总新客的48.8%），说明<strong>1月引流活动效率最高</strong>。</li>
+        <li><strong>2月新客断崖：</strong>新客仅194人，与GMV下滑同步，说明引流在假期期间暂停或失效。</li>
+        <li><strong>老客占比在上升：</strong>5月老客（35人）超过新客（27人），说明<strong>存量运营开始发挥作用</strong>，但绝对量仍然很小。</li>
+        <li><strong>关键指标：</strong>目前整体复购率28.6%，老客订单贡献占比偏低，需在商品规划中重点设计<strong>复购钩子</strong>。</li>
+      </ul>
+    </div>
+
+    <div class="lidan-box">
+      <textarea class="lidan-textarea" placeholder="你现在的新客引流策略是什么？复购率目标是多少？计划通过哪些商品或活动来提升老客复购？"></textarea>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 四、商品销售分析 -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">04</div>
+      <div>
+        <div class="section-title">商品销售分析</div>
+        <div class="section-sub">主力商品识别、品类结构与套组价值分析</div>
+      </div>
+    </div>
+
+    <div class="chart-grid full">
+      <div class="chart-card">
+        <div class="chart-card-title">商品销售额排行 Top 15（排除定制储值链接）</div>
+        <div class="chart-wrap tall">
+          <canvas id="chartTopProducts"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-grid" style="margin-top:20px">
+      <div class="chart-card">
+        <div class="chart-card-title">品类销售占比</div>
+        <div class="chart-wrap">
+          <canvas id="chartCategoryPie"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-title">各品类购买人数与客单价</div>
+        <div class="chart-wrap">
+          <canvas id="chartCategoryBuyer"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="insight-box gold" style="margin-top:20px">
+      <div class="insight-title gold">💡 业务洞察</div>
+      <ul class="insight-ul">
+        <li><strong>再生婴儿肌组合</strong>（¥19.9万 / 100人）和<strong>眼罩*6</strong>（¥19.0万 / 80人）是真实商品中销售额最高的两款，<strong>套组属性明显</strong>，客单价高。</li>
+        <li><strong>刮痧板</strong>（¥17.1万 / 81人）是高频低价引流转化的典型——单价低但购买人数多，适合拉新引流。</li>
+        <li><strong>面霜小样组合</strong>（面霜6g*2，¥14.6万 / 84人）说明小规格试用装是有效转化工具，降低首次购买门槛。</li>
+        <li><strong>油霜</strong>（¥65.0万 / 520人）和<strong>眼部护理</strong>（¥160.6万 / 540人）是品类销售额最高的两大赛道，是私域核心货品。</li>
+        <li><strong>套组客单价¥1,507 vs 单品客单价¥1,024</strong>，套组高出47%——组套策略对提升客单价效果显著。</li>
+      </ul>
+    </div>
+
+    <div class="lidan-box">
+      <textarea class="lidan-textarea" placeholder="哪些商品是你的私域利润款？哪些是引流款？你计划如何用商品组套提升客单价？"></textarea>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 五、套组 vs 单品对比 -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">05</div>
+      <div>
+        <div class="section-title">套组与单品运营价值对比</div>
+        <div class="section-sub">量化套组策略对客单价和GMV的贡献</div>
+      </div>
+    </div>
+
+    <div class="chart-grid">
+      <div class="chart-card">
+        <div class="chart-card-title">套组 vs 单品：客单价对比</div>
+        <div class="chart-wrap">
+          <canvas id="chartSetVsSingleACV"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-title">套组 vs 单品：订单量与GMV占比</div>
+        <div class="chart-wrap">
+          <canvas id="chartSetVsSingleGMV"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:20px">
+      <div class="compare-row">
+        <div class="compare-label">套组客单价</div>
+        <div class="compare-bar-wrap">
+          <div class="compare-bar accent" style="width:100%">¥1,507</div>
+        </div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-label">单品客单价</div>
+        <div class="compare-bar-wrap">
+          <div class="compare-bar green" style="width:68%">¥1,024</div>
+        </div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-label">套组订单均价</div>
+        <div class="compare-bar-wrap">
+          <div class="compare-bar gold" style="width:94%">¥1,507</div>
+        </div>
+      </div>
+      <div class="compare-row">
+        <div class="compare-label">单品订单均价</div>
+        <div class="compare-bar-wrap">
+          <div class="compare-bar purple" style="width:64%">¥1,024</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="insight-box purple" style="margin-top:20px">
+      <div class="insight-title purple">💡 业务洞察</div>
+      <ul class="insight-ul">
+        <li><strong>套组溢价效果明确：</strong>套组客单价比单品高出47%，且含套组的625笔订单共贡献约<strong>¥94.2万GMV</strong>（占总GMV的24.8%）。</li>
+        <li><strong>套组数量不足：</strong>目前含套组订单仅占18.3%（625/3416），仍有大量单品订单未被引导转化到套组，<strong>组套引导空间巨大</strong>。</li>
+        <li><strong>组套策略建议：</strong>将油霜+精华水+面霜打包成「抗衰三件套」，将眼膜+眼霜打包成「眼周护理套」，利用套组提升连带率。</li>
+      </ul>
+    </div>
+
+    <div class="lidan-box">
+      <textarea class="lidan-textarea" placeholder="你目前有哪些固定组套？计划新增哪些组套？组套的定价策略如何设计（高价套/低价引流套）？"></textarea>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 六、客户分层分析 -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">06</div>
+      <div>
+        <div class="section-title">客户分层分析</div>
+        <div class="section-sub">消费分层、购买频次分布与高价值客户识别</div>
+      </div>
+    </div>
+
+    <div class="chart-grid">
+      <div class="chart-card">
+        <div class="chart-card-title">客户消费分层分布</div>
+        <div class="chart-wrap">
+          <canvas id="chartACVDist"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-title">客户购买频次分布</div>
+        <div class="chart-wrap">
+          <canvas id="chartFreqDist"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-3" style="margin-top:20px">
+      <div class="mini-kpi">
+        <div class="mk-value" style="color:var(--gold)">99人</div>
+        <div class="mk-label">高净值客户（¥5,000+）</div>
+      </div>
+      <div class="mini-kpi">
+        <div class="mk-value" style="color:var(--accent)">665人</div>
+        <div class="mk-label">中坚客户（¥1,000-2,000）</div>
+      </div>
+      <div class="mini-kpi">
+        <div class="mk-value" style="color:var(--green)">534人</div>
+        <div class="mk-label">复购客户（购买≥2次）</div>
+      </div>
+    </div>
+
+    <div class="insight-box blue" style="margin-top:20px">
+      <div class="insight-title blue">💡 业务洞察</div>
+      <ul class="insight-ul">
+        <li><strong>核心客户群体清晰：</strong>消费¥1,000-2,000的客户最多（665人，占35.6%），是私域的<strong>主力消费区间</strong>，也是组品定价的核心锚点。</li>
+        <li><strong>高净值客户价值大：</strong>¥5,000+客户99人（5.3%），但贡献了高比例的GMV，是私域<strong>重点VIP维护对象</strong>。</li>
+        <li><strong>低消费客户可激活：</strong>¥0-500客户239人（12.8%）购买力弱，需设计<strong>激活钩子</strong>（如小样试用、新品体验）引导升级。</li>
+        <li><strong>超高频客户：</strong>有1位客户购买了621单，说明存在特殊购买行为（如代理/团购），建议单独标签管理。</li>
+      </ul>
+    </div>
+
+    <div class="lidan-box">
+      <textarea class="lidan-textarea" placeholder="你的VIP客户有哪些特征？你打算如何维护高净值客户（专属活动/1v1服务/限定新品）？低消费客户如何激活？"></textarea>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 七、会员价值分析 -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">07</div>
+      <div>
+        <div class="section-title">会员 vs 非会员价值对比</div>
+        <div class="section-sub">会员体系带来的用户价值差异</div>
+      </div>
+    </div>
+
+    <div class="chart-grid">
+      <div class="chart-card">
+        <div class="chart-card-title">会员与非会员客单价对比</div>
+        <div class="chart-wrap">
+          <canvas id="chartMemberACV"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-title">会员与非会员订单量占比</div>
+        <div class="chart-wrap">
+          <canvas id="chartMemberOrders"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="insight-box green" style="margin-top:20px">
+      <div class="insight-title green">💡 业务洞察</div>
+      <ul class="insight-ul">
+        <li><strong>会员价值显著更高：</strong>会员客单价（¥2,596）是非会员（¥1,428）的<strong>1.82倍</strong>，会员体系对提升用户LTV效果明显。</li>
+        <li><strong>会员订单占62%：</strong>2,125笔订单来自会员，仅1,291笔来自非会员，说明<strong>私域留存用户以会员为主</strong>。</li>
+        <li><strong>会员转化是关键杠杆：</strong>如果能将非会员转化为会员，客单价理论上可提升82%，是<strong>最有效的GMV增长策略之一</strong>。</li>
+        <li><strong>建议：</strong>设计会员专属套组、会员储值优惠、会员积分体系，形成会员专属价值感。</li>
+      </ul>
+    </div>
+
+    <div class="lidan-box">
+      <textarea class="lidan-textarea" placeholder="你的会员权益体系是什么样的？会员专属组套如何设计才能与非会员形成明显价值差异？"></textarea>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 八、地区与渠道分析 -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">08</div>
+      <div>
+        <div class="section-title">地区与渠道分析</div>
+        <div class="section-sub">地域分布特征与渠道支付结构</div>
+      </div>
+    </div>
+
+    <div class="chart-grid">
+      <div class="chart-card">
+        <div class="chart-card-title">省份GMV排行 Top 10</div>
+        <div class="chart-wrap tall">
+          <canvas id="chartProvince"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-title">支付方式分布</div>
+        <div class="chart-wrap">
+          <canvas id="chartPayment"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="insight-box accent" style="margin-top:20px">
+      <div class="insight-title accent">💡 业务洞察</div>
+      <ul class="insight-ul">
+        <li><strong>广东TOP1：</strong>广东（¥50.4万）、浙江（¥35.9万）、四川（¥31.4万）三省贡献了<strong>超30%的GMV</strong>，是核心市场。</li>
+        <li><strong>华东+华南是基本盘：</strong>广东、浙江、江苏、上海四省市合计约¥141万，占总GMV的37%，高线城市私域渗透率高。</li>
+        <li><strong>西南市场值得关注：</strong>四川（¥31.4万）排名第三，说明西南市场对私域护肤需求旺盛，值得重点拓展。</li>
+        <li><strong>储值卡占比36%：</strong>1,234笔订单通过储值卡支付，反映私域用户的储值意愿强，储值卡是锁客的有效工具。</li>
+      </ul>
+    </div>
+
+    <div class="lidan-box">
+      <textarea class="lidan-textarea" placeholder="广东/浙江/四川这些高产出省份，有什么共同特征？其他省份是否有潜力市场值得拓展？"></textarea>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 九、购买时段分析 -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">09</div>
+      <div>
+        <div class="section-title">购买时段分析</div>
+        <div class="section-sub">识别用户活跃时间，优化触达节奏</div>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-card-title">24小时订单分布</div>
+      <div class="chart-wrap tall">
+        <canvas id="chartHourly"></canvas>
+      </div>
+    </div>
+
+    <div class="grid-3" style="margin-top:20px">
+      <div class="mini-kpi">
+        <div class="mk-value" style="color:var(--accent)">10-12点</div>
+        <div class="mk-label">第一高峰（合计 706单）</div>
+      </div>
+      <div class="mini-kpi">
+        <div class="mk-value" style="color:var(--blue)">14-17点</div>
+        <div class="mk-label">第二高峰（合计 818单）</div>
+      </div>
+      <div class="mini-kpi">
+        <div class="mk-value" style="color:var(--gold)">22点后</div>
+        <div class="mk-label">深夜订单占 5.1%</div>
+      </div>
+    </div>
+
+    <div class="insight-box gold" style="margin-top:20px">
+      <div class="insight-title gold">💡 业务洞察</div>
+      <ul class="insight-ul">
+        <li><strong>上午10-12点是第一黄金时段：</strong>11点单小时383单（全天最高峰），说明用户习惯在<strong>工作日上午浏览并下单</strong>。</li>
+        <li><strong>下午14-17点是第二黄金时段：</strong>午后消费者决策更理性，适合推送<strong>组套商品和会员活动</strong>。</li>
+        <li><strong>深夜订单不可忽视：</strong>22点后仍有174单（5.1%），可能与<strong>睡前刷手机种草</strong>有关，可布局内容种草+即时下单场景。</li>
+        <li><strong>触达时间建议：</strong>社群推送选9:30-10:00（提前埋伏）、朋友圈选13:30（午后自然浏览）、私信选10:30或15:30（决策窗口）。</li>
+      </ul>
+    </div>
+
+    <div class="lidan-box">
+      <textarea class="lidan-textarea" placeholder="你目前的推送节奏是怎样的？根据这个时段分布，你打算如何调整社群/朋友圈/私信的发布时机？"></textarea>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 十、连带率与商品关联 -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">10</div>
+      <div>
+        <div class="section-title">连带率与品类关联分析</div>
+        <div class="section-sub">单次购买多品类情况与连带销售机会</div>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-card-title">单订单购买品类数量分布</div>
+      <div class="chart-wrap tall">
+        <canvas id="chartCrossSell"></canvas>
+      </div>
+    </div>
+
+    <div class="insight-box purple" style="margin-top:20px">
+      <div class="insight-title purple">💡 业务洞察</div>
+      <ul class="insight-ul">
+        <li><strong>72%的订单只买1个品类：</strong>说明大部分用户是<strong>单点购买</strong>，连带空间巨大——如果能引导用户从买1个品类→买2个品类，GMV理论可提升50-100%。</li>
+        <li><strong>油霜+眼部是黄金搭档：</strong>眼部护理（¥160.6万）和油霜（¥65.0万）是两大品类，可设计「油霜+眼霜」组套捆绑销售。</li>
+        <li><strong>套组是连带最佳载体：</strong>再生婴儿肌组合、抗老CP套、女神精雕套都是<strong>多品类打包</strong>，验证了套组=连带率提升的逻辑。</li>
+        <li><strong>连带话术建议：</strong>「买了油霜，搭配精华水效果更好」「眼霜+眼膜是最佳CP」，用产品搭配逻辑引导追加购买。</li>
+      </ul>
+    </div>
+
+    <div class="lidan-box">
+      <textarea class="lidan-textarea" placeholder="你目前的连带话术是什么？还有哪些品类组合是天然的CP（比如油霜+素颜乳）？计划在哪些触点做连带引导？"></textarea>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!-- 十一、综合运营建议 -->
+  <!-- ═══════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">11</div>
+      <div>
+        <div class="section-title">综合运营建议与商品规划方向</div>
+        <div class="section-sub">基于数据洞察的策略方向建议</div>
+      </div>
+    </div>
+
+    <div class="insight-box accent">
+      <div class="insight-title accent">🎯 核心建议：商品规划四步走</div>
+      <ul class="insight-ul">
+        <li><strong>① 重新设计私域商品结构（引流款-利润款-形象款）</strong><br>
+          · 引流款：刮痧板（¥171/81人）、面霜小样（¥14.6万）→ 拉新开口<br>
+          · 利润款：再生婴儿肌组合（¥19.9万）、女神精雕套（¥8.9万）→ 核心GMV<br>
+          · 形象款：眼罩套组（¥19.0万/80人）→ 高客单标杆</li>
+        <li><strong>② 大幅提升套组占比（目标：从18%→35%）</strong><br>
+          · 推出「抗衰三件套」（油霜+精华水+面霜），定价¥1,200-1,500<br>
+          · 推出「眼周护理套」（眼膜+眼霜+眼精华），定价¥800-1,000<br>
+          · 设计「会员专属套」与「限时组套」，制造稀缺感</li>
+        <li><strong>③ 复购率提升（从28.6%→40%）</strong><br>
+          · 12.6天平均复购周期 → 设计「15天周期」触达节点<br>
+          · 用套组/组合形式做「周期性补货」提醒（如精华水120ml≈30天用量）<br>
+          · 2月春节断崖 → 设计「节后备货」预热文案，提前锁客</li>
+        <li><strong>④ 会员转化（从62%→75%）</strong><br>
+          · 非会员客单价¥1,428仅为会员的55%，会员化后价值提升潜力82%<br>
+          · 设计新客首单会员专属价（如立减¥100或赠品），降低会员门槛<br>
+          · 储值卡+会员联动：储值¥1,000升级为会员，享受专属套组</li>
+      </ul>
+    </div>
+
+    <div class="lidan-box" style="margin-top:20px">
+      <textarea class="lidan-textarea" placeholder="结合以上所有分析，你认为最应该优先落地的是哪个策略？Q2商品规划的核心爆品是什么？"></textarea>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>销售二部私域运营数据分析报告 · 2025.12 - 2026.05 · 由数据驱动洞察</p>
+  </div>
+</div>
+
+<script>
+// ─── Color Palette ───
+const C = {
+  accent: '#e8a87c',
+  accent2: '#c38d6b',
+  accent3: '#7ec8c8',
+  blue: '#7caee8',
+  gold: '#d4af37',
+  green: '#6bc98f',
+  purple: '#b07ec8',
+  pink: '#e87cb0',
+  orange: '#e8b87c',
+  teal: '#7ce8d4',
+  red: '#e87c7c',
+  text2: '#8a8899',
+  border: '#252a3a',
+};
+
+// ─── Chart Defaults ───
+Chart.defaults.color = C.text2;
+Chart.defaults.font.family = "'Noto Sans SC', sans-serif";
+Chart.defaults.plugins.legend.labels.usePointStyle = true;
+Chart.defaults.plugins.legend.labels.padding = 16;
+
+const makeGradient = (ctx, chartArea, color1, color2) => {
+  if (!chartArea) return color1;
+  const g = ctx.createLinearGradient(chartArea.left, 0, chartArea.right, 0);
+  g.addColorStop(0, color1);
+  g.addColorStop(1, color2);
+  return g;
+};
+
+// ══════════════════════════════
+// 01 Monthly Trend
+// ══════════════════════════════
+new Chart(document.getElementById('chartMonthly'), {
+  type: 'bar',
+  data: {
+    labels: ['12月\n2025','1月\n2026','2月\n2026','3月\n2026','4月\n2026','5月\n2026'],
+    datasets: [{
+      label: '订单数',
+      data: [877, 1247, 410, 449, 311, 122],
+      backgroundColor: C.accent,
+      borderRadius: 6,
+      yAxisID: 'y',
+      order: 2
+    }, {
+      label: 'GMV（万元）',
+      data: [129.0, 144.3, 39.5, 43.6, 17.8, 5.8],
+      type: 'line',
+      borderColor: C.gold,
+      backgroundColor: 'transparent',
+      tension: 0.4,
+      pointBackgroundColor: C.gold,
+      pointRadius: 5,
+      yAxisID: 'y1',
+      order: 1
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    scales: {
+      y: {
+        type: 'linear', position: 'left', id: 'y',
+        title: { display: true, text: '订单数', color: C.accent },
+        grid: { color: 'rgba(37,42,58,0.5)' },
+        ticks: { color: C.text2 }
+      },
+      y1: {
+        type: 'linear', position: 'right', id: 'y1',
+        title: { display: true, text: 'GMV（万元）', color: C.gold },
+        grid: { drawOnChartArea: false },
+        ticks: { color: C.text2 }
+      },
+      x: { grid: { display: false }, ticks: { color: C.text2 } }
+    }
+  }
+});
+
+// ══════════════════════════════
+// 02 Monthly ACV
+// ══════════════════════════════
+new Chart(document.getElementById('chartMonthlyACV'), {
+  type: 'line',
+  data: {
+    labels: ['12月\n2025','1月\n2026','2月\n2026','3月\n2026','4月\n2026','5月\n2026'],
+    datasets: [{
+      label: '月客单价',
+      data: [2016, 1831, 1535, 1241, 908, 929],
+      borderColor: C.blue,
+      backgroundColor: (ctx) => {
+        const ca = ctx.chart.chartArea;
+        if (!ca) return 'rgba(124,174,232,0.1)';
+        const g = ctx.chart.ctx.createLinearGradient(0, ca.bottom, 0, ca.top);
+        g.addColorStop(0, 'rgba(124,174,232,0)');
+        g.addColorStop(1, 'rgba(124,174,232,0.3)');
+        return g;
+      },
+      fill: true,
+      tension: 0.4,
+      pointBackgroundColor: C.blue,
+      pointRadius: 5
+    }, {
+      label: '月订单均价',
+      data: [1471, 1157, 962, 970, 572, 472],
+      borderColor: C.accent,
+      backgroundColor: 'transparent',
+      tension: 0.4,
+      pointBackgroundColor: C.accent,
+      pointRadius: 5
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    scales: {
+      y: { grid: { color: 'rgba(37,42,58,0.5)' }, ticks: { color: C.text2 } },
+      x: { grid: { display: false }, ticks: { color: C.text2 } }
+    }
+  }
+});
+
+// ══════════════════════════════
+// 03 Customer Mix (Donut)
+// ══════════════════════════════
+new Chart(document.getElementById('chartCustomerMix'), {
+  type: 'doughnut',
+  data: {
+    labels: ['首单客户 (71.4%)', '复购客户 (28.6%)'],
+    datasets: [{
+      data: [1333, 534],
+      backgroundColor: [C.accent, C.accent3],
+      borderColor: '#151820',
+      borderWidth: 3,
+      hoverOffset: 8
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    cutout: '65%',
+    plugins: {
+      legend: { position: 'bottom', labels: { padding: 16, font: { size: 13 } } }
+    }
+  }
+});
+
+// ══════════════════════════════
+// 04 New vs Old Monthly
+// ══════════════════════════════
+new Chart(document.getElementById('chartMonthlyNewOld'), {
+  type: 'bar',
+  data: {
+    labels: ['12月','1月','2月','3月','4月','5月'],
+    datasets: [{
+      label: '新客',
+      data: [640, 650, 194, 252, 104, 27],
+      backgroundColor: C.accent,
+      borderRadius: 4
+    }, {
+      label: '老客',
+      data: [0, 138, 63, 99, 92, 35],
+      backgroundColor: C.accent3,
+      borderRadius: 4
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    scales: {
+      y: { stacked: false, grid: { color: 'rgba(37,42,58,0.5)' }, ticks: { color: C.text2 } },
+      x: { grid: { display: false }, ticks: { color: C.text2 } }
+    }
+  }
+});
+
+// ══════════════════════════════
+// 05 Top Products Bar
+// ══════════════════════════════
+new Chart(document.getElementById('chartTopProducts'), {
+  type: 'bar',
+  data: {
+    labels: [
+      '再生婴儿肌组合','眼罩*6','刮痧板','面霜*2小样','精华5ml*6',
+      '精华6ml*4','紫色泡泡袋','面膜6片*6','女神精雕套','眼膜软膜套组',
+      '琥珀逆龄油霜','面霜单品','面霜*3','眼精华油*3','眼霜单品'
+    ],
+    datasets: [{
+      label: '销售额（万元）',
+      data: [19.9,19.0,17.1,14.6,14.5,13.2,11.6,10.4,9.0,8.8,8.5,7.1,6.8,6.8,5.9],
+      backgroundColor: [
+        C.gold, C.gold, C.accent, C.accent, C.accent2,
+        C.accent2, C.blue, C.blue, C.accent3, C.accent3,
+        C.green, C.green, C.purple, C.purple, C.teal
+      ],
+      borderRadius: 6
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    indexAxis: 'y',
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { color: 'rgba(37,42,58,0.5)' }, ticks: { color: C.text2 } },
+      y: { grid: { display: false }, ticks: { color: C.text2, font: { size: 11 } } }
+    }
+  }
+});
+
+// ══════════════════════════════
+// 06 Category Pie
+// ══════════════════════════════
+new Chart(document.getElementById('chartCategoryPie'), {
+  type: 'doughnut',
+  data: {
+    labels: ['眼部护理','其他/配件','精华水','面膜','油霜','面霜','套组','乳液','精华','刮痧板/工具'],
+    datasets: [{
+      data: [160.6, 213.5, 76.1, 75.4, 65.0, 48.1, 39.4, 26.7, 26.2, 17.1],
+      backgroundColor: [C.accent, C.text2, C.accent3, C.blue, C.gold, C.green, C.purple, C.orange, C.pink, C.teal],
+      borderColor: '#151820', borderWidth: 2,
+      hoverOffset: 6
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    cutout: '60%',
+    plugins: { legend: { position: 'bottom', labels: { padding: 10, font: { size: 11 } } } }
+  }
+});
+
+// ══════════════════════════════
+// 07 Category Buyer vs ACV
+// ══════════════════════════════
+new Chart(document.getElementById('chartCategoryBuyer'), {
+  type: 'bar',
+  data: {
+    labels: ['眼部护理','油霜','其他','精华水','面膜','面霜','套组','乳液','精华','刮痧板'],
+    datasets: [{
+      label: '购买人数',
+      data: [540, 520, 1002, 355, 372, 244, 212, 157, 134, 81],
+      backgroundColor: C.accent3,
+      borderRadius: 4,
+      yAxisID: 'y'
+    }, {
+      label: '人均消费（元）',
+      data: [2974, 1250, 2130, 2145, 2028, 1970, 1857, 1702, 1957, 2114],
+      borderColor: C.gold,
+      backgroundColor: 'transparent',
+      type: 'line',
+      tension: 0.4,
+      pointBackgroundColor: C.gold,
+      pointRadius: 4,
+      yAxisID: 'y1'
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    scales: {
+      y: { type: 'linear', position: 'left', id: 'y', grid: { color: 'rgba(37,42,58,0.5)' }, ticks: { color: C.text2 } },
+      y1: { type: 'linear', position: 'right', id: 'y1', grid: { drawOnChartArea: false }, ticks: { color: C.gold } },
+      x: { grid: { display: false }, ticks: { color: C.text2 } }
+    }
+  }
+});
+
+// ══════════════════════════════
+// 08 Set vs Single - ACV
+// ══════════════════════════════
+new Chart(document.getElementById('chartSetVsSingleACV'), {
+  type: 'bar',
+  data: {
+    labels: ['套组客单价', '单品客单价'],
+    datasets: [{
+      label: '客单价（元）',
+      data: [1507, 1024],
+      backgroundColor: [C.gold, C.green],
+      borderRadius: 8
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { grid: { color: 'rgba(37,42,58,0.5)' }, ticks: { color: C.text2, callback: v => '¥'+v } },
+      x: { grid: { display: false }, ticks: { color: C.text2, font: { size: 14 } } }
+    }
+  }
+});
+
+// ══════════════════════════════
+// 09 Set vs Single - GMV
+// ══════════════════════════════
+new Chart(document.getElementById('chartSetVsSingleGMV'), {
+  type: 'doughnut',
+  data: {
+    labels: ['含套组订单 GMV（¥94.2万）', '纯单品订单 GMV（¥285.7万）'],
+    datasets: [{
+      data: [94.2, 285.7],
+      backgroundColor: [C.gold, C.blue],
+      borderColor: '#151820', borderWidth: 3,
+      hoverOffset: 8
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    cutout: '65%',
+    plugins: { legend: { position: 'bottom', labels: { padding: 16, font: { size: 12 } } } }
+  }
+});
+
+// ══════════════════════════════
+// 10 ACV Distribution
+// ══════════════════════════════
+new Chart(document.getElementById('chartACVDist'), {
+  type: 'bar',
+  data: {
+    labels: ['¥0-200','¥200-500','¥500-1,000','¥1,000-2,000','¥2,000-5,000','¥5,000+'],
+    datasets: [{
+      label: '客户数',
+      data: [64, 175, 440, 665, 423, 99],
+      backgroundColor: [C.red, C.orange, C.accent2, C.accent, C.gold, C.green],
+      borderRadius: 6
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { grid: { color: 'rgba(37,42,58,0.5)' }, ticks: { color: C.text2 } },
+      x: { grid: { display: false }, ticks: { color: C.text2 } }
+    }
+  }
+});
+
+// ══════════════════════════════
+// 11 Freq Distribution
+// ══════════════════════════════
+new Chart(document.getElementById('chartFreqDist'), {
+  type: 'bar',
+  data: {
+    labels: ['1次','2次','3次','4次','5次','6次','7次','8次','9次','11次','52次+'],
+    datasets: [{
+      label: '客户数',
+      data: [1333, 348, 95, 51, 20, 9, 5, 2, 1, 1, 1],
+      backgroundColor: [C.accent, C.accent2, C.blue, C.blue, C.gold, C.gold, C.green, C.green, C.purple, C.purple, C.red],
+      borderRadius: 6
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { grid: { color: 'rgba(37,42,58,0.5)' }, ticks: { color: C.text2 } },
+      x: { grid: { display: false }, ticks: { color: C.text2 } }
+    }
+  }
+});
+
+// ══════════════════════════════
+// 12 Member ACV
+// ══════════════════════════════
+new Chart(document.getElementById('chartMemberACV'), {
+  type: 'bar',
+  data: {
+    labels: ['会员客单价', '非会员客单价'],
+    datasets: [{
+      label: '客单价（元）',
+      data: [2596, 1428],
+      backgroundColor: [C.gold, C.accent],
+      borderRadius: 8
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { grid: { color: 'rgba(37,42,58,0.5)' }, ticks: { color: C.text2, callback: v => '¥'+v } },
+      x: { grid: { display: false }, ticks: { color: C.text2, font: { size: 14 } } }
+    }
+  }
+});
+
+// ══════════════════════════════
+// 13 Member Orders
+// ══════════════════════════════
+new Chart(document.getElementById('chartMemberOrders'), {
+  type: 'doughnut',
+  data: {
+    labels: ['会员订单 (62.2%)', '非会员订单 (37.8%)'],
+    datasets: [{
+      data: [2125, 1291],
+      backgroundColor: [C.gold, C.accent],
+      borderColor: '#151820', borderWidth: 3, hoverOffset: 8
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    cutout: '65%',
+    plugins: { legend: { position: 'bottom', labels: { padding: 16 } } }
+  }
+});
+
+// ══════════════════════════════
+// 14 Province
+// ══════════════════════════════
+new Chart(document.getElementById('chartProvince'), {
+  type: 'bar',
+  data: {
+    labels: ['广东','浙江','四川','江苏','上海','北京','山东','湖北','广西','福建'],
+    datasets: [{
+      label: '销售额（万元）',
+      data: [50.4, 35.9, 31.4, 28.4, 26.3, 21.1, 16.6, 16.1, 12.1, 11.3],
+      backgroundColor: [
+        C.gold, C.accent, C.accent2, C.blue, C.blue,
+        C.accent3, C.green, C.green, C.purple, C.purple
+      ],
+      borderRadius: 6
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    indexAxis: 'y',
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { color: 'rgba(37,42,58,0.5)' }, ticks: { color: C.text2 } },
+      y: { grid: { display: false }, ticks: { color: C.text2, font: { size: 12 } } }
+    }
+  }
+});
+
+// ══════════════════════════════
+// 15 Payment
+// ══════════════════════════════
+new Chart(document.getElementById('chartPayment'), {
+  type: 'doughnut',
+  data: {
+    labels: ['微信支付 (63.3%)', '储值卡 (36.1%)', '其他 (0.6%)'],
+    datasets: [{
+      data: [2162, 1234, 20],
+      backgroundColor: [C.green, C.gold, C.text2],
+      borderColor: '#151820', borderWidth: 3, hoverOffset: 8
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    cutout: '65%',
+    plugins: { legend: { position: 'bottom', labels: { padding: 16 } } }
+  }
+});
+
+// ══════════════════════════════
+// 16 Hourly
+// ══════════════════════════════
+new Chart(document.getElementById('chartHourly'), {
+  type: 'bar',
+  data: {
+    labels: ['0','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23'],
+    datasets: [{
+      label: '订单数',
+      data: [14,1,2,7,3,15,11,59,70,92,323,383,230,201,262,262,294,273,189,180,202,169,120,54],
+      backgroundColor: (ctx) => {
+        const v = ctx.raw;
+        if (v >= 300) return C.gold;
+        if (v >= 200) return C.accent;
+        if (v >= 100) return C.accent2;
+        if (v >= 50) return C.accent3;
+        return C.text2;
+      },
+      borderRadius: 4
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { grid: { color: 'rgba(37,42,58,0.5)' }, ticks: { color: C.text2 } },
+      x: { grid: { display: false }, ticks: { color: C.text2, callback: v => v+'时' } }
+    }
+  }
+});
+
+// ══════════════════════════════
+// 17 Cross Sell
+// ══════════════════════════════
+new Chart(document.getElementById('chartCrossSell'), {
+  type: 'bar',
+  data: {
+    labels: ['1个品类\n(72.0%)','2个品类\n(11.8%)','3个品类\n(11.0%)','4个品类\n(1.7%)','5个品类\n(1.0%)','6+品类\n(2.5%)'],
+    datasets: [{
+      label: '订单数',
+      data: [2460, 403, 377, 59, 33, 84],
+      backgroundColor: [C.accent, C.accent2, C.blue, C.gold, C.green, C.purple],
+      borderRadius: 6
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { grid: { color: 'rgba(37,42,58,0.5)' }, ticks: { color: C.text2 } },
+      x: { grid: { display: false }, ticks: { color: C.text2 } }
+    }
+  }
+});
+
+// ─── Scroll Animation ───
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.section, .kpi-card, .chart-card').forEach(el => {
+  el.classList.add('animate-in');
+  observer.observe(el);
+});
+</script>
+
+</body>
+</html>
